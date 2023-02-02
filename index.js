@@ -1,13 +1,14 @@
+require("dotenv").config();
+
 const http = require("http");
+const {
+  PORT,
+  SOURCE_REPO_URL,
+  SOURCE_BRANCH,
+  TARGET_REPO_URL,
+  TARGET_BRANCH,
+} = require("./src/config/app.config");
 const exec = require("child_process").exec;
-
-const port = 8000;
-
-const sourceRepoUrl = "https://gitlab.com/nafisrdn/webhook-test.git";
-const targetRepoUrl = "https://gitlab.com/nafisrdn/test-git-3.git";
-
-const sourceBranch = "main";
-const targetBranch = "main";
 
 const runGitCommand = (command) =>
   new Promise((resolve, reject) => {
@@ -20,7 +21,7 @@ const runGitCommand = (command) =>
   });
 
 const gitPullFromSource = async () => {
-  const pullCommand = `git pull ${sourceRepoUrl} ${sourceBranch}`;
+  const pullCommand = `git pull ${SOURCE_REPO_URL} ${SOURCE_BRANCH}`;
   const pullResult = await runGitCommand(pullCommand);
   console.log(pullResult);
 };
@@ -32,7 +33,7 @@ const executeRestoreGit = async () => {
 };
 
 const gitPushToTarget = async () => {
-  const pushCommand = `git push ${targetRepoUrl} ${sourceBranch}:${targetBranch}`;
+  const pushCommand = `git push ${TARGET_REPO_URL} ${TARGET_BRANCH}`;
   const pushResult = await runGitCommand(pushCommand);
   console.log(pushResult);
 };
@@ -66,6 +67,6 @@ http
     res.write("ok");
     res.end();
   })
-  .listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
+  .listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
   });
