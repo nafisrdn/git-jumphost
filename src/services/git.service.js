@@ -5,6 +5,10 @@ const {
   SOURCE_BRANCH,
   TARGET_REPO_URL,
   TARGET_BRANCH,
+  SOURCE_GIT_USERNAME,
+  SOURCE_GIT_PASSWORD,
+  TARGET_GIT_USERNAME,
+  TARGET_GIT_PASSWORD,
 } = require("../config/app.config");
 
 const runGitCommand = (command) =>
@@ -17,8 +21,17 @@ const runGitCommand = (command) =>
     });
   });
 
+const generateOriginUrlWithCreds = (gitUsername, gitPassowrd, repoUrl) =>
+  `https://${gitUsername}:${gitPassowrd}@${repoUrl}`;
+
 const gitPullFromSource = async () => {
-  const pullCommand = `git pull ${SOURCE_REPO_URL} ${SOURCE_BRANCH}`;
+  const generatedUrl = generateOriginUrlWithCreds(
+    SOURCE_GIT_USERNAME,
+    SOURCE_GIT_PASSWORD,
+    SOURCE_REPO_URL
+  );
+
+  const pullCommand = `git pull ${generatedUrl} ${SOURCE_BRANCH}`;
   const pullResult = await runGitCommand(pullCommand);
   console.log(pullResult);
 };
@@ -30,7 +43,13 @@ const executeRestoreGit = async () => {
 };
 
 const gitPushToTarget = async () => {
-  const pushCommand = `git push ${TARGET_REPO_URL} ${TARGET_BRANCH}`;
+  const generatedUrl = generateOriginUrlWithCreds(
+    TARGET_GIT_USERNAME,
+    TARGET_GIT_PASSWORD,
+    TARGET_REPO_URL
+  );
+
+  const pushCommand = `git push ${generatedUrl} ${TARGET_BRANCH}`;
   const pushResult = await runGitCommand(pushCommand);
   console.log(pushResult);
 };

@@ -10,6 +10,8 @@ const {
 
 let taskCount = 0;
 
+console.log(process.env);
+
 http
   .createServer(async (req, res) => {
     res.writeHead(200, { "Content-Type": "text/plain" });
