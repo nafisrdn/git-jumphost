@@ -1,42 +1,12 @@
 require("dotenv").config();
 
 const http = require("http");
+const { PORT } = require("./src/config/app.config");
 const {
-  PORT,
-  SOURCE_REPO_URL,
-  SOURCE_BRANCH,
-  TARGET_REPO_URL,
-  TARGET_BRANCH,
-} = require("./src/config/app.config");
-const exec = require("child_process").exec;
-
-const runGitCommand = (command) =>
-  new Promise((resolve, reject) => {
-    exec(command, { cwd: "repo" }, (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
-      }
-      resolve({ stdout, stderr });
-    });
-  });
-
-const gitPullFromSource = async () => {
-  const pullCommand = `git pull ${SOURCE_REPO_URL} ${SOURCE_BRANCH}`;
-  const pullResult = await runGitCommand(pullCommand);
-  console.log(pullResult);
-};
-
-const executeRestoreGit = async () => {
-  const restoreCommand = `git checkout .`;
-  const restoreResult = await runGitCommand(restoreCommand);
-  console.log(restoreResult);
-};
-
-const gitPushToTarget = async () => {
-  const pushCommand = `git push ${TARGET_REPO_URL} ${TARGET_BRANCH}`;
-  const pushResult = await runGitCommand(pushCommand);
-  console.log(pushResult);
-};
+  executeRestoreGit,
+  gitPullFromSource,
+  gitPushToTarget,
+} = require("./src/services/git.service");
 
 let taskCount = 0;
 
