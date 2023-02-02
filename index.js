@@ -6,57 +6,44 @@ const targetRepoUrl = "https://gitlab.com/nafisrdn/test-git-2.git";
 
 const branch = "main";
 
-const gitPullFromSource = () =>
+const runGitCommand = (command) =>
   new Promise((resolve, reject) => {
-    const pullCommand = `git --git-dir=repo/.git pull ${sourceRepoUrl} ${branch}`;
-
-    exec(pullCommand, (error, stdout, stderr) => {
-      if (error !== null) {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
         reject(error);
       }
-
       resolve({ stdout, stderr });
     });
   });
 
-const executeRestoreGit = () =>
-  new Promise((resolve, reject) => {
-    const restoreCommand = `git --git-dir=repo/.git --work-tree=repo checkout .`;
+const gitPullFromSource = async () => {
+  const pullCommand = `git --git-dir=repo/.git pull ${sourceRepoUrl} ${branch}`;
+  const pullResult = await runGitCommand(pullCommand);
+  console.log(pullResult);
+};
 
-    exec(restoreCommand, (error, stdout, stderr) => {
-      if (error !== null) {
-        reject(error);
-      }
+const executeRestoreGit = async () => {
+  const restoreCommand = `git --git-dir=repo/.git --work-tree=repo checkout .`;
+  const restoreResult = await runGitCommand(restoreCommand);
+  console.log(restoreResult);
+};
 
-      resolve({ stdout, stderr });
-    });
-  });
-
-const gitPushToTarget = () =>
-  new Promise((resolve, reject) => {
-    const pushCommand = `git --git-dir=repo/.git pull ${targetRepoUrl} ${branch}`;
-
-    exec(pushCommand, (error, stdout, stderr) => {
-      if (error !== null) {
-        reject(error);
-      }
-
-      resolve({ stdout, stderr });
-    });
-  });
+const gitPushToTarget = async () => {
+  const pushCommand = `git --git-dir=repo/.git push ${targetRepoUrl} ${branch}`;
+  const pushResult = await runGitCommand(pushCommand);
+  console.log(pushResult);
+};
 
 http
   .createServer(async (req, res) => {
     res.writeHead(200, { "Content-Type": "text/plain" });
 
     console.log("Discard local changes...");
-    const restore = await executeRestoreGit();
-    console.log(restore);
+    await executeRestoreGit();
     console.log("Discard done");
 
     console.log("Pulling from source...");
-    const pullGit = await gitPullFromSource();
-    console.log(pullGit);
+    await gitPullFromSource();
     console.log("Pull done");
 
     res.write("ok");
