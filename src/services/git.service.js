@@ -11,9 +11,9 @@ const {
   TARGET_GIT_PASSWORD,
 } = require("../config/app.config");
 
-const runGitCommand = (command) =>
+const runGitCommand = (command, useCwd = true) =>
   new Promise((resolve, reject) => {
-    exec(command, { cwd: "repo" }, (error, stdout, stderr) => {
+    exec(command, { cwd: useCwd ? "repo" : null }, (error, stdout, stderr) => {
       if (error) {
         reject(error);
       }
@@ -54,7 +54,9 @@ const gitPushToTarget = async () => {
   console.log(pushResult);
 };
 
+module.exports.runGitCommand = runGitCommand;
 module.exports.executeRestoreGit = executeRestoreGit;
+module.exports.generateOriginUrlWithCreds = generateOriginUrlWithCreds;
 module.exports.gitPullFromSource = gitPullFromSource;
 module.exports.executeRestoreGit = executeRestoreGit;
 module.exports.gitPushToTarget = gitPushToTarget;
