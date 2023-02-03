@@ -34,7 +34,11 @@ const initRepo = () =>
 
 (async () => {
   if (ENVIRONMENT === "PROD") {
-    await initRepo();
+    try {
+      await initRepo();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   http
@@ -65,8 +69,6 @@ const initRepo = () =>
         res.writeHead(500, { "Content-Type": "text/plain" });
 
         console.log(error);
-
-        res.write(error);
       }
 
       taskCount++;
