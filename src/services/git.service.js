@@ -55,7 +55,7 @@ const gitPushToTarget = async () => {
     TARGET_REPO_URL
   );
 
-  const pushCommand = `git push ${generatedUrl} ${TARGET_BRANCH}`;
+  const pushCommand = `git push --force ${generatedUrl} ${TARGET_BRANCH}`;
   const pushResult = await runGitCommand(pushCommand);
   console.log(pushResult);
 };
