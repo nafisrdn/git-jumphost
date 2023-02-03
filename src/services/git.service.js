@@ -18,7 +18,9 @@ const runGitCommand = (command, useCwd = true) =>
       { cwd: useCwd ? "repo" : null },
       (error, stdout, stderr) => {
         if (error) {
-          reject(`Error executing command: ${error}. stderr: ${stderr}`);
+          reject(
+            `${error} \nstderr: ${stderr} \nstdout: ${stdout}`
+          );
         }
         resolve(stdout);
       }
