@@ -39,6 +39,10 @@ const cloneRepo = async () => {
 };
 
 (async () => {
-  logger.info(await cloneRepo());
-  logger.info("Repository cloning successful");
+  try {
+    logger.info(await cloneRepo());
+    logger.info("Repository cloning successful");
+  } catch (error) {
+    logger.error(error);
+  }
 })();
