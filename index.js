@@ -10,6 +10,14 @@ const {
 } = require("./src/services/git.service");
 const { logger } = require("./src/utils/logger.utils");
 
+const executeAndLog = async (func, startMessage, endMessage) => {
+  logger.info(startMessage);
+
+  func();
+
+  logger.info(endMessage);
+};
+
 (async () => {
   try {
     if (ENVIRONMENT === "PROD") {
@@ -27,21 +35,32 @@ const { logger } = require("./src/utils/logger.utils");
             throw new Error("invalid webhook token");
           }
 
-          logger.info("Discarding local changes");
-          await executeRestoreGit();
-          logger.info("Local changes discarded");
+          const discardStartMessage = "Discarding local changes";
+          const discardEndMessage = "Local changes discarded";
 
-          logger.info("Pulling from source");
-          await gitPullFromSource();
-          logger.info("Pull successful");
+          await executeAndLog(
+            executeRestoreGit,
+            discardStartMessage,
+            discardEndMessage
+          );
 
-          logger.info("Discarding local changes");
-          await executeRestoreGit();
-          logger.info("Local changes discarded");
+          await executeAndLog(
+            gitPullFromSource,
+            "Pulling from source",
+            "Pull successful"
+          );
 
-          logger.info("Pushing to target");
-          await gitPushToTarget();
-          logger.info("Push successful");
+          await executeAndLog(
+            executeRestoreGit,
+            discardStartMessage,
+            discardEndMessage
+          );
+
+          await executeAndLog(
+            gitPushToTarget,
+            "Pushing to target",
+            "Push successful"
+          );
 
           res.write("ok");
         } catch (error) {
