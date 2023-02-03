@@ -8,11 +8,11 @@ const {
   TARGET_GIT_USERNAME,
   TARGET_GIT_PASSWORD,
 } = require("../config/app.config");
-const { runGitCommand } = require("../utils/git.utils");
+const {
+  runGitCommand,
+  generateOriginUrlWithCreds,
+} = require("../utils/git.utils");
 const { logger } = require("../utils/logger.utils");
-
-const generateOriginUrlWithCreds = (gitUsername, gitPassowrd, repoUrl) =>
-  `https://${gitUsername}:${gitPassowrd}@${repoUrl}`;
 
 const gitPullFromSource = async () => {
   const generatedUrl = generateOriginUrlWithCreds(

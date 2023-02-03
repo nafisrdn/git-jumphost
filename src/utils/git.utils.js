@@ -14,4 +14,8 @@ const runGitCommand = (command, useCwd = true) =>
     );
   });
 
+const generateOriginUrlWithCreds = (gitUsername, gitPassowrd, repoUrl) =>
+  `https://${gitUsername}:${gitPassowrd}@${repoUrl}`;
+
 module.exports.runGitCommand = runGitCommand;
+module.exports.generateOriginUrlWithCreds = generateOriginUrlWithCreds;
