@@ -12,4 +12,6 @@ module.exports.SOURCE_GIT_PASSWORD = process.env.SOURCE_GIT_PASSWORD;
 module.exports.TARGET_GIT_USERNAME = process.env.TARGET_GIT_USERNAME;
 module.exports.TARGET_GIT_PASSWORD = process.env.TARGET_GIT_PASSWORD;
 
-module.exports.ENVIRONMENT = process.env.ENVIRONMENT || 'DEV';
+module.exports.ENVIRONMENT = process.env.ENVIRONMENT || "DEV";
+
+module.exports.WEBHOOK_TOKEN = process.env.WEBHOOK_TOKEN;

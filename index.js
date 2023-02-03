@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const exec = require("child_process").exec;
 const http = require("http");
-const { PORT, ENVIRONMENT } = require("./src/config/app.config");
+const { PORT, ENVIRONMENT, WEBHOOK_TOKEN } = require("./src/config/app.config");
 const {
   executeRestoreGit,
   gitPullFromSource,
@@ -44,6 +44,12 @@ const initRepo = () =>
     .createServer(async (req, res) => {
       try {
         res.writeHead(200, { "Content-Type": "text/plain" });
+
+        const webhookToken = req.headers["x-gitlab-token"];
+
+        if (!webhookToken || webhookToken !== WEBHOOK_TOKEN) {
+          throw new Error("invalid webhook token");
+        }
 
         logger.info("Discarding local changes");
         await executeRestoreGit();
