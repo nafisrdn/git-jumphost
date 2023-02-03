@@ -13,12 +13,16 @@ const {
 
 const runGitCommand = (command, useCwd = true) =>
   new Promise((resolve, reject) => {
-    exec(command, { cwd: useCwd ? "repo" : null }, (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
+    exec(
+      `${command} 2>&1`,
+      { cwd: useCwd ? "repo" : null },
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(`Error executing command: ${error}. stderr: ${stderr}`);
+        }
+        resolve(stdout);
       }
-      resolve({ stdout, stderr });
-    });
+    );
   });
 
 const generateOriginUrlWithCreds = (gitUsername, gitPassowrd, repoUrl) =>
