@@ -8,11 +8,9 @@ const {
   SOURCE_GIT_PASSWORD,
   SOURCE_REPO_URL,
 } = require("../config/app.config");
-const {
-  generateOriginUrlWithCreds,
-  runGitCommand,
-} = require("../services/git.service");
+const { generateOriginUrlWithCreds } = require("../services/git.service");
 const { logger } = require("../utils/logger.utils");
+const { runGitCommand } = require("../utils/git.utils");
 
 const repoDirPath = path.join(__dirname, "../../repo");
 
