@@ -1,3 +1,4 @@
+const exec = require("child_process").exec;
 const {
   SOURCE_REPO_URL,
   SOURCE_BRANCH,
@@ -44,8 +45,30 @@ const gitPushToTarget = async () => {
   logger.info(pushResult);
 };
 
+const initRepo = () =>
+  new Promise((resolve, reject) => {
+    const buildProcess = exec(`npm run build`);
+
+    buildProcess.stdout.on("data", (data) => {
+      logger.info(data);
+    });
+
+    buildProcess.stderr.on("data", (error) => {
+      reject(error);
+    });
+
+    buildProcess.on("exit", (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(`Build process exited with code: ${code}`);
+      }
+    });
+  });
+
 module.exports.executeRestoreGit = executeRestoreGit;
 module.exports.generateOriginUrlWithCreds = generateOriginUrlWithCreds;
 module.exports.gitPullFromSource = gitPullFromSource;
 module.exports.executeRestoreGit = executeRestoreGit;
 module.exports.gitPushToTarget = gitPushToTarget;
+module.exports.initRepo = initRepo;
