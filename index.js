@@ -8,6 +8,7 @@ const {
   gitPullFromSource,
   gitPushToTarget,
 } = require("./src/services/git.service");
+const { logger } = require("./src/utils/logger.utils");
 
 let taskCount = 0;
 
@@ -16,7 +17,7 @@ const initRepo = () =>
     const buildProcess = exec(`npm run build`);
 
     buildProcess.stdout.on("data", (data) => {
-      console.log(data);
+      logger.info(data);
     });
 
     buildProcess.stderr.on("data", (error) => {
@@ -37,7 +38,7 @@ const initRepo = () =>
     try {
       await initRepo();
     } catch (error) {
-      console.log(error);
+      logger.error(error);
     }
   }
 

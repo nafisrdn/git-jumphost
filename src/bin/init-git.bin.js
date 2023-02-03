@@ -12,6 +12,7 @@ const {
   generateOriginUrlWithCreds,
   runGitCommand,
 } = require("../services/git.service");
+const { logger } = require("../utils/logger.utils");
 
 const repoDirPath = path.join(__dirname, "../../repo");
 
@@ -19,9 +20,9 @@ const cloneRepo = async () => {
   const isDirectoryExist = fs.existsSync(repoDirPath);
 
   if (isDirectoryExist) {
-    console.log("Removing existing repo directory...");
+    logger.info(`Removing existing local repository from ${repoDirPath}`);
     fs.rmSync(repoDirPath, { recursive: true, force: true });
-    console.log("Remove done");
+    logger.info(`Removing successful`);
   }
 
   const generatedUrl = generateOriginUrlWithCreds(
@@ -35,11 +36,11 @@ const cloneRepo = async () => {
   const cloneCommand = `git clone ${generatedUrl} ${repoDirectory}`;
 
   const clonseResult = await runGitCommand(cloneCommand, false);
-  console.log(clonseResult);
+
+  return clonseResult;
 };
 
 (async () => {
-  console.log(`Cloning repo from ${SOURCE_REPO_URL}...`);
-  await cloneRepo();
-  console.log("Clone done");
+  logger.info(await cloneRepo());
+  logger.info("Cloning successful");
 })();
