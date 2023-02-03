@@ -10,8 +10,6 @@ const {
 } = require("./src/services/git.service");
 const { logger } = require("./src/utils/logger.utils");
 
-let taskCount = 0;
-
 const initRepo = () =>
   new Promise((resolve, reject) => {
     const buildProcess = exec(`npm run build`);
@@ -47,35 +45,32 @@ const initRepo = () =>
       try {
         res.writeHead(200, { "Content-Type": "text/plain" });
 
-        console.log(`======= ${taskCount} =======`);
-        console.log("Discard local changes...");
+        logger.info("Discarding local changes");
         await executeRestoreGit();
-        console.log("Discard done");
+        logger.info("Local changes discarded");
 
-        console.log("Pulling from source...");
+        logger.info("Pulling from source");
         await gitPullFromSource();
-        console.log("Pull done");
+        logger.info("Pull successful");
 
-        console.log("Discard local changes...");
+        logger.info("Discarding local changes");
         await executeRestoreGit();
-        console.log("Discard done");
+        logger.info("Local changes discarded");
 
-        console.log("Pushing to target...");
+        logger.info("Pushing to target");
         await gitPushToTarget();
-        console.log("Push done");
-        console.log(`======= = =======`);
+        logger.info("Push successful");
 
         res.write("ok");
       } catch (error) {
         res.writeHead(500, { "Content-Type": "text/plain" });
 
-        console.log(error);
+        logger.error(error);
       }
 
-      taskCount++;
       res.end();
     })
     .listen(PORT, () => {
-      console.log(`Server is listening on port ${PORT}`);
+      logger.info(`Server is listening on port ${PORT}`);
     });
 })();

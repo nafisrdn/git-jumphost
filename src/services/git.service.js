@@ -10,6 +10,7 @@ const {
   TARGET_GIT_USERNAME,
   TARGET_GIT_PASSWORD,
 } = require("../config/app.config");
+const { logger } = require("../utils/logger.utils");
 
 const runGitCommand = (command, useCwd = true) =>
   new Promise((resolve, reject) => {
@@ -18,9 +19,7 @@ const runGitCommand = (command, useCwd = true) =>
       { cwd: useCwd ? "repo" : null },
       (error, stdout, stderr) => {
         if (error) {
-          reject(
-            `${error} \nstderr: ${stderr} \nstdout: ${stdout}`
-          );
+          reject(`${error} \nstderr: ${stderr} \nstdout: ${stdout}`);
         }
         resolve(stdout);
       }
@@ -39,13 +38,13 @@ const gitPullFromSource = async () => {
 
   const pullCommand = `git pull ${generatedUrl} ${SOURCE_BRANCH}`;
   const pullResult = await runGitCommand(pullCommand);
-  console.log(pullResult);
+  logger.info(pullResult);
 };
 
 const executeRestoreGit = async () => {
   const restoreCommand = `git checkout .`;
   const restoreResult = await runGitCommand(restoreCommand);
-  console.log(restoreResult);
+  logger.info(restoreResult);
 };
 
 const gitPushToTarget = async () => {
@@ -57,7 +56,7 @@ const gitPushToTarget = async () => {
 
   const pushCommand = `git push --force ${generatedUrl} ${TARGET_BRANCH}`;
   const pushResult = await runGitCommand(pushCommand);
-  console.log(pushResult);
+  logger.info(pushResult);
 };
 
 module.exports.runGitCommand = runGitCommand;

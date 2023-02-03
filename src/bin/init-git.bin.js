@@ -22,7 +22,7 @@ const cloneRepo = async () => {
   if (isDirectoryExist) {
     logger.info(`Removing existing local repository from ${repoDirPath}`);
     fs.rmSync(repoDirPath, { recursive: true, force: true });
-    logger.info(`Removing successful`);
+    logger.info(`Local repository removal successful`);
   }
 
   const generatedUrl = generateOriginUrlWithCreds(
@@ -42,5 +42,5 @@ const cloneRepo = async () => {
 
 (async () => {
   logger.info(await cloneRepo());
-  logger.info("Cloning successful");
+  logger.info("Repository cloning successful");
 })();
