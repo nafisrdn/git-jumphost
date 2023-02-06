@@ -29,9 +29,7 @@ const cloneRepo = async () => {
     SOURCE_REPO_URL
   );
 
-  const repoDirectory = repoDirPath;
-
-  const cloneCommand = `git clone ${generatedUrl} ${repoDirectory}`;
+  const cloneCommand = `git clone ${generatedUrl} ${repoDirPath}`;
 
   const clonseResult = await runGitCommand(cloneCommand, false);
 
