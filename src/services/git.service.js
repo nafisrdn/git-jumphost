@@ -27,7 +27,7 @@ const gitPullFromSource = async () => {
   logger.info(pullResult);
 };
 
-const executeRestoreGit = async () => {
+const discardLocalChanges = async () => {
   const restoreCommand = `git checkout .`;
   const restoreResult = await runGitCommand(restoreCommand);
   logger.info(restoreResult);
@@ -66,9 +66,8 @@ const initRepo = () =>
     });
   });
 
-module.exports.executeRestoreGit = executeRestoreGit;
+module.exports.discardLocalChanges = discardLocalChanges;
 module.exports.generateOriginUrlWithCreds = generateOriginUrlWithCreds;
 module.exports.gitPullFromSource = gitPullFromSource;
-module.exports.executeRestoreGit = executeRestoreGit;
 module.exports.gitPushToTarget = gitPushToTarget;
 module.exports.initRepo = initRepo;

@@ -3,7 +3,7 @@ require("dotenv").config();
 const http = require("http");
 const { PORT, ENVIRONMENT, WEBHOOK_TOKEN } = require("./src/config/app.config");
 const {
-  executeRestoreGit,
+  discardLocalChanges,
   gitPullFromSource,
   gitPushToTarget,
   initRepo,
@@ -32,7 +32,7 @@ const handleRequest = async (req, res) => {
     const discardEndMessage = "Local changes discarded";
 
     await executeAndLog(
-      executeRestoreGit,
+      discardLocalChanges,
       discardStartMessage,
       discardEndMessage
     );
@@ -44,7 +44,7 @@ const handleRequest = async (req, res) => {
     );
 
     await executeAndLog(
-      executeRestoreGit,
+      discardLocalChanges,
       discardStartMessage,
       discardEndMessage
     );
