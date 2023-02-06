@@ -2,3 +2,4 @@ repo/
 node_modules/
 .env
 image-instruction.txt
+*.log
