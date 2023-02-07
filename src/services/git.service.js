@@ -38,15 +38,17 @@ const discardLocalChanges = async () => {
 };
 
 const gitPushToTarget = async () => {
-  const generatedUrl = generateOriginUrlWithCreds(
+  const targetRemote = generateOriginUrlWithCreds(
     TARGET_GIT_USERNAME,
     TARGET_GIT_PASSWORD,
     TARGET_REPO_URL
   );
 
-  const pushCommand = `git push --force ${generatedUrl} ${TARGET_BRANCH}`;
-  const pushResult = await runGitCommand(pushCommand);
-  logger.info(pushResult);
+  const pushResult = await git.push(targetRemote, TARGET_BRANCH, {
+    "--force": null,
+  });
+
+  logger.info(JSON.stringify(pushResult));
 };
 
 const initRepo = () =>
