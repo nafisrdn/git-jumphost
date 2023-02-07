@@ -1,5 +1,4 @@
 const exec = require("child_process").exec;
-const path = require("path");
 const { default: simpleGit } = require("simple-git");
 const {
   SOURCE_REPO_URL,
@@ -12,10 +11,7 @@ const {
   TARGET_GIT_PASSWORD,
   REPOSITORY_DIR_PATH,
 } = require("../config/app.config");
-const {
-  runGitCommand,
-  generateOriginUrlWithCreds,
-} = require("../utils/git.utils");
+const { generateOriginUrlWithCreds } = require("../utils/git.utils");
 const { logger } = require("../utils/logger.utils");
 const git = simpleGit(REPOSITORY_DIR_PATH);
 
