@@ -1,5 +1,7 @@
 module.exports.PORT = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
+const path = require("path");
+
 module.exports.SOURCE_REPO_URL = process.env.SOURCE_REPO_URL;
 module.exports.TARGET_REPO_URL = process.env.TARGET_REPO_URL;
 
@@ -15,3 +17,5 @@ module.exports.TARGET_GIT_PASSWORD = process.env.TARGET_GIT_PASSWORD;
 module.exports.ENVIRONMENT = process.env.ENVIRONMENT || "DEV";
 
 module.exports.WEBHOOK_TOKEN = process.env.WEBHOOK_TOKEN;
+
+module.exports.REPOSITORY_DIR_PATH = path.join(__dirname, "../../repo");
