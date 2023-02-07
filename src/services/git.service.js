@@ -32,9 +32,7 @@ const gitPullFromSource = async () => {
 };
 
 const discardLocalChanges = async () => {
-  const checkoutResult = await git.checkout();
-
-  logger.info(checkoutResult);
+  await git.checkout();
 };
 
 const gitPushToTarget = async () => {
