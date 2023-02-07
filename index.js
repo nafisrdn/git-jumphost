@@ -43,17 +43,17 @@ const handleRequest = async (req, res) => {
       "Pull successful"
     );
 
-    await executeAndLog(
-      discardLocalChanges,
-      discardStartMessage,
-      discardEndMessage
-    );
+    // await executeAndLog(
+    //   discardLocalChanges,
+    //   discardStartMessage,
+    //   discardEndMessage
+    // );
 
-    await executeAndLog(
-      gitPushToTarget,
-      "Pushing to target",
-      "Push successful"
-    );
+    // await executeAndLog(
+    //   gitPushToTarget,
+    //   "Pushing to target",
+    //   "Push successful"
+    // );
 
     res.write("ok");
   } catch (error) {

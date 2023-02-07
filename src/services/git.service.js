@@ -1,4 +1,6 @@
 const exec = require("child_process").exec;
+const path = require("path");
+const { default: simpleGit } = require("simple-git");
 const {
   SOURCE_REPO_URL,
   SOURCE_BRANCH,
@@ -8,29 +10,31 @@ const {
   SOURCE_GIT_PASSWORD,
   TARGET_GIT_USERNAME,
   TARGET_GIT_PASSWORD,
+  REPOSITORY_DIR_PATH,
 } = require("../config/app.config");
 const {
   runGitCommand,
   generateOriginUrlWithCreds,
 } = require("../utils/git.utils");
 const { logger } = require("../utils/logger.utils");
+const git = simpleGit(REPOSITORY_DIR_PATH);
 
 const gitPullFromSource = async () => {
-  const generatedUrl = generateOriginUrlWithCreds(
+  const sourceRemote = generateOriginUrlWithCreds(
     SOURCE_GIT_USERNAME,
     SOURCE_GIT_PASSWORD,
     SOURCE_REPO_URL
   );
 
-  const pullCommand = `git pull ${generatedUrl} ${SOURCE_BRANCH}`;
-  const pullResult = await runGitCommand(pullCommand);
-  logger.info(pullResult);
+  const pullResult = await git.pull(sourceRemote, SOURCE_BRANCH);
+
+  logger.info(JSON.stringify(pullResult));
 };
 
 const discardLocalChanges = async () => {
-  const restoreCommand = `git checkout .`;
-  const restoreResult = await runGitCommand(restoreCommand);
-  logger.info(restoreResult);
+  const checkoutResult = await git.checkout();
+
+  logger.info(checkoutResult);
 };
 
 const gitPushToTarget = async () => {
