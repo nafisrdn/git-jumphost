@@ -75,7 +75,7 @@ const startServer = () => {
 (async () => {
   try {
     if (ENVIRONMENT === "PROD") {
-      await initRepo();
+      await gitService.initRepo();
     }
     startServer();
   } catch (error) {
