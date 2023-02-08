@@ -41,7 +41,6 @@ const discardAndResetRepo = async (branch) => {
 
   await gitUtils.runGitCommand("git clean -f");
   await gitUtils.runGitCommand("git reset --hard");
-
   await gitUtils.runGitCommand(`git fetch ${sourceRemote} ${branch}`);
   await gitUtils.runGitCommand(`git reset --hard FETCH_HEAD`);
 };
