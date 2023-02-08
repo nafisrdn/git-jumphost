@@ -1,5 +1,5 @@
 const exec = require("child_process").exec;
-const { default: simpleGit, CleanOptions, ResetMode } = require("simple-git");
+const { default: simpleGit } = require("simple-git");
 const {
   SOURCE_REPO_URL,
   TARGET_REPO_URL,
@@ -28,13 +28,7 @@ const gitPullFromSource = async (branch) => {
   logger.info(JSON.stringify(pullResult));
 };
 
-const discardLocalChanges = async (branch) => {
-  const sourceRemote = generateOriginUrlWithCreds(
-    SOURCE_GIT_USERNAME,
-    SOURCE_GIT_PASSWORD,
-    SOURCE_REPO_URL
-  );
-
+const switchBranch = async (branch) => {
   const localBranchExists = await isBranchExistInLocal(branch);
 
   if (localBranchExists) {
@@ -45,6 +39,16 @@ const discardLocalChanges = async (branch) => {
     await git.checkoutLocalBranch(branch);
     logger.info(`Branch "${branch}" successfully created`);
   }
+};
+
+const discardAndResetRepo = async (branch) => {
+  const sourceRemote = generateOriginUrlWithCreds(
+    SOURCE_GIT_USERNAME,
+    SOURCE_GIT_PASSWORD,
+    SOURCE_REPO_URL
+  );
+
+  await switchBranch(branch)
 
   await runGitCommand("git clean -f");
   await runGitCommand("git reset --hard");
@@ -96,8 +100,8 @@ const initRepo = () =>
     });
   });
 
-module.exports.discardLocalChanges = discardLocalChanges;
-module.exports.generateOriginUrlWithCreds = generateOriginUrlWithCreds;
+module.exports.discardAndResetRepo = discardAndResetRepo;
+module.exports.switchBranch = switchBranch;
 module.exports.gitPullFromSource = gitPullFromSource;
 module.exports.gitPushToTarget = gitPushToTarget;
 module.exports.initRepo = initRepo;
