@@ -1,6 +1,6 @@
 const exec = require("child_process").exec;
 
-const runGitCommand = (command, useCwd = true) =>
+module.exports.runGitCommand = (command, useCwd = true) =>
   new Promise((resolve, reject) => {
     exec(
       `${command} 2>&1`,
@@ -14,8 +14,17 @@ const runGitCommand = (command, useCwd = true) =>
     );
   });
 
-const generateOriginUrlWithCreds = (gitUsername, gitPassowrd, repoUrl) =>
-  `https://${gitUsername}:${gitPassowrd}@${repoUrl}`;
+module.exports.generateOriginUrlWithCreds = (
+  gitUsername,
+  gitPassowrd,
+  repoUrl
+) => `https://${gitUsername}:${gitPassowrd}@${repoUrl}`;
 
-module.exports.runGitCommand = runGitCommand;
-module.exports.generateOriginUrlWithCreds = generateOriginUrlWithCreds;
+module.exports.getBranchName = (body) => {
+  const { ref } = body;
+
+  const branchIndex = ref.indexOf("heads/") + "heads/".length;
+  const branchName = ref.substring(branchIndex);
+
+  return branchName;
+};

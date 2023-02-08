@@ -9,6 +9,8 @@ const {
   initRepo,
 } = require("./src/services/git.service");
 const { logger } = require("./src/utils/logger.utils");
+const { getRequestBody } = require("./src/utils/http.utils");
+const { getBranchName } = require("./src/utils/git.utils");
 
 const executeAndLog = async (func, startMessage, endMessage) => {
   logger.info(startMessage);
@@ -26,31 +28,43 @@ const validateWebhookToken = (req) => {
 const handleRequest = async (req, res) => {
   try {
     validateWebhookToken(req);
+    const body = await getRequestBody(req);
+    const branch = getBranchName(body);
+
     res.writeHead(200, { "Content-Type": "text/plain" });
+    logger.info(`Branch: ${branch}`);
 
     const discardStartMessage = "Discarding local changes";
     const discardEndMessage = "Local changes discarded";
 
     await executeAndLog(
-      discardLocalChanges,
+      async () => {
+        await discardLocalChanges(branch);
+      },
       discardStartMessage,
       discardEndMessage
     );
 
     await executeAndLog(
-      gitPullFromSource,
+      async () => {
+        await gitPullFromSource(branch);
+      },
       "Pulling from source",
       "Pull successful"
     );
 
     await executeAndLog(
-      discardLocalChanges,
+      async () => {
+        await discardLocalChanges(branch);
+      },
       discardStartMessage,
       discardEndMessage
     );
 
     await executeAndLog(
-      gitPushToTarget,
+      async () => {
+        await gitPushToTarget(branch);
+      },
       "Pushing to target",
       "Push successful"
     );
@@ -60,6 +74,7 @@ const handleRequest = async (req, res) => {
     res.writeHead(500, { "Content-Type": "text/plain" });
     logger.error(error);
   }
+
   res.end();
 };
 
