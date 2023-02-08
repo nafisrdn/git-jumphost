@@ -1,7 +1,8 @@
 require("dotenv").config();
 
 const http = require("http");
-const { PORT, ENVIRONMENT, WEBHOOK_TOKEN } = require("./src/config/app.config");
+const { PORT, ENVIRONMENT } = require("./src/config/app.config");
+const { WEBHOOK_TOKEN } = require("./src/config/git.config");
 const gitService = require("./src/services/git.service");
 const httpUtils = require("./src/utils/http.utils");
 const gitUtils = require("./src/utils/git.utils");

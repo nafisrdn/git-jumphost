@@ -8,7 +8,7 @@ const {
   TARGET_GIT_USERNAME,
   TARGET_GIT_PASSWORD,
   REPOSITORY_DIR_PATH,
-} = require("../config/app.config");
+} = require("../config/git.config");
 const {
   generateOriginUrlWithCreds,
   runGitCommand,
@@ -48,7 +48,7 @@ const discardAndResetRepo = async (branch) => {
     SOURCE_REPO_URL
   );
 
-  await switchBranch(branch)
+  await switchBranch(branch);
 
   await runGitCommand("git clean -f");
   await runGitCommand("git reset --hard");

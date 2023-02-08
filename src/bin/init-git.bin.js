@@ -7,7 +7,7 @@ const {
   SOURCE_GIT_PASSWORD,
   SOURCE_REPO_URL,
   REPOSITORY_DIR_PATH,
-} = require("../config/app.config");
+} = require("../config/git.config");
 const { logger } = require("../utils/logger.utils");
 const { generateOriginUrlWithCreds } = require("../utils/git.utils");
 const { simpleGit, CleanOptions } = require("simple-git");
