@@ -1,8 +1,8 @@
 require("dotenv").config();
 
 const http = require("http");
-const { PORT, ENVIRONMENT } = require("./src/config/app.config");
-const { WEBHOOK_TOKEN } = require("./src/config/git.config");
+const appConfig = require("./src/config/app.config");
+const gitConfig = require("./src/config/git.config");
 const gitService = require("./src/services/git.service");
 const httpUtils = require("./src/utils/http.utils");
 const gitUtils = require("./src/utils/git.utils");
@@ -11,7 +11,7 @@ const { logger } = require("./src/utils/logger.utils");
 
 const validateWebhookToken = (req) => {
   const webhookToken = req.headers["x-gitlab-token"];
-  if (!webhookToken || webhookToken !== WEBHOOK_TOKEN) {
+  if (!webhookToken || webhookToken !== gitConfig.WEBHOOK_TOKEN) {
     throw new Error("Invalid webhook token");
   }
 };
@@ -68,14 +68,14 @@ const handleRequest = async (req, res) => {
 };
 
 const startServer = () => {
-  http.createServer(handleRequest).listen(PORT, () => {
-    logger.info(`Server is listening on port ${PORT}`);
+  http.createServer(handleRequest).listen(appConfig.PORT, () => {
+    logger.info(`Server is listening on port ${appConfig.PORT}`);
   });
 };
 
 (async () => {
   try {
-    if (ENVIRONMENT === "PROD") {
+    if (appConfig.ENVIRONMENT === "PROD") {
       await gitService.initRepo();
     }
     startServer();
