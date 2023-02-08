@@ -1,26 +1,15 @@
 const exec = require("child_process").exec;
-const { default: simpleGit } = require("simple-git");
-const {
-  SOURCE_REPO_URL,
-  TARGET_REPO_URL,
-  SOURCE_GIT_USERNAME,
-  SOURCE_GIT_PASSWORD,
-  TARGET_GIT_USERNAME,
-  TARGET_GIT_PASSWORD,
-  REPOSITORY_DIR_PATH,
-} = require("../config/git.config");
-const {
-  generateOriginUrlWithCreds,
-  runGitCommand,
-} = require("../utils/git.utils");
+const simpleGit = require("simple-git");
+const gitConfig = require("../config/git.config");
+const gitUtils = require("../utils/git.utils");
 const { logger } = require("../utils/logger.utils");
-const git = simpleGit(REPOSITORY_DIR_PATH);
+const git = simpleGit(gitConfig.REPOSITORY_DIR_PATH);
 
 const gitPullFromSource = async (branch) => {
-  const sourceRemote = generateOriginUrlWithCreds(
-    SOURCE_GIT_USERNAME,
-    SOURCE_GIT_PASSWORD,
-    SOURCE_REPO_URL
+  const sourceRemote = gitUtils.generateOriginUrlWithCreds(
+    gitConfig.SOURCE_GIT_USERNAME,
+    gitConfig.SOURCE_GIT_PASSWORD,
+    gitConfig.SOURCE_REPO_URL
   );
 
   const pullResult = await git.pull(sourceRemote, branch);
@@ -42,19 +31,19 @@ const switchBranch = async (branch) => {
 };
 
 const discardAndResetRepo = async (branch) => {
-  const sourceRemote = generateOriginUrlWithCreds(
-    SOURCE_GIT_USERNAME,
-    SOURCE_GIT_PASSWORD,
-    SOURCE_REPO_URL
+  const sourceRemote = gitUtils.generateOriginUrlWithCreds(
+    gitConfig.SOURCE_GIT_USERNAME,
+    gitConfig.SOURCE_GIT_PASSWORD,
+    gitConfig.SOURCE_REPO_URL
   );
 
   await switchBranch(branch);
 
-  await runGitCommand("git clean -f");
-  await runGitCommand("git reset --hard");
+  await gitUtils.runGitCommand("git clean -f");
+  await gitUtils.runGitCommand("git reset --hard");
 
-  await runGitCommand(`git fetch ${sourceRemote} ${branch}`);
-  await runGitCommand(`git reset --hard FETCH_HEAD`);
+  await gitUtils.runGitCommand(`git fetch ${sourceRemote} ${branch}`);
+  await gitUtils.runGitCommand(`git reset --hard FETCH_HEAD`);
 };
 
 const isBranchExistInLocal = async (branch) => {
@@ -66,10 +55,10 @@ const isBranchExistInLocal = async (branch) => {
 };
 
 const gitPushToTarget = async (branch) => {
-  const targetRemote = generateOriginUrlWithCreds(
-    TARGET_GIT_USERNAME,
-    TARGET_GIT_PASSWORD,
-    TARGET_REPO_URL
+  const targetRemote = gitUtils.generateOriginUrlWithCreds(
+    gitConfig.TARGET_GIT_USERNAME,
+    gitConfig.TARGET_GIT_PASSWORD,
+    gitConfig.TARGET_REPO_URL
   );
 
   const pushResult = await git.push(targetRemote, branch, {
