@@ -1,7 +1,8 @@
 const winston = require("winston");
+const appConfig = require("../config/app.config");
 
 const logger = winston.createLogger({
-  level: "info",
+  level: appConfig.ENVIRONMENT === "DEV" ? "debug" : "info",
   format: winston.format.combine(
     winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
     winston.format.printf((info) => {
