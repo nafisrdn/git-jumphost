@@ -18,7 +18,7 @@ Before you can use Git Jumphost, you need to have the following installed on you
 To install Git Jumphost on your machine, follow these steps:
 
 1. Clone the repository to your local machine:
-   `git clone https://github.com/<your-username>/git-jumphost.git`
+   `git clone https://github.com/nafisrdn/git-jumphost.git`
 
 2. Navigate to the repository directory:
    `cd git-jumphost`
@@ -43,4 +43,4 @@ To deploy Git Jumphost in a production environment, follow these steps:
 
 ## Authors
 
-- **Nafis Ramadhan Fadhlurrohman** - _Initial work_ - [nafisrdn](https://github.com/nafisrdn)
+- **Nafis Ramadhan Fadhlurrohman** - [nafisrdn](https://github.com/nafisrdn)
