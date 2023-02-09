@@ -12,6 +12,25 @@ Before you can use Git Jumphost, you need to have the following installed on you
 
 - Node.js
 - npm (comes bundled with Node.js)
+- A `.env` file that includes the following variables:
+    ```
+    PORT=8000
+
+    SOURCE_REPO_URL=gitlab.com/user/source.git
+    TARGET_REPO_URL=gitlab.com/user/target.git
+
+    SOURCE_GIT_USERNAME=source_token
+    SOURCE_GIT_PASSWORD=password
+
+    TARGET_GIT_USERNAME=target_token
+    TARGET_GIT_PASSWORD=password
+
+    # DEV | PROD
+    ENVIRONMENT=DEV
+
+    WEBHOOK_TOKEN=gitlab_token_123
+    ```
+
 
 ### Installing
 
