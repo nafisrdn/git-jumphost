@@ -16,8 +16,8 @@ const validateWebhookToken = (req) => {
   }
 };
 
-const handleGitFlow = async (branch) => {
-  await commonUtils.executeWithLogging(
+const discardAndResetRepo = (branch) =>
+  commonUtils.executeWithLogging(
     async () => {
       await gitService.discardAndResetRepo(branch);
     },
@@ -25,7 +25,8 @@ const handleGitFlow = async (branch) => {
     `Local changes discarded and resetted for ${branch} branch`
   );
 
-  await commonUtils.executeWithLogging(
+const gitPullFromSource = (branch) =>
+  commonUtils.executeWithLogging(
     async () => {
       await gitService.gitPullFromSource(branch);
     },
@@ -33,21 +34,20 @@ const handleGitFlow = async (branch) => {
     `Pull successful for ${branch} branch`
   );
 
-  await commonUtils.executeWithLogging(
-    async () => {
-      await gitService.discardAndResetRepo(branch);
-    },
-    `Discarding and resetting local changes for ${branch} branch`,
-    `Local changes discarded and resetted for ${branch} branch`
-  );
-
-  await commonUtils.executeWithLogging(
+const gitPushToTarget = (branch) =>
+  commonUtils.executeWithLogging(
     async () => {
       await gitService.gitPushToTarget(branch);
     },
     `Pushing to target for ${branch} branch`,
     `Push successful for ${branch} branch`
   );
+
+const handleGitFlow = async (branch) => {
+  await discardAndResetRepo(branch);
+  await gitPullFromSource(branch);
+  await discardAndResetRepo(branch);
+  await gitPushToTarget(branch);
 };
 
 const handleRequest = async (req, res) => {
@@ -61,7 +61,7 @@ const handleRequest = async (req, res) => {
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.write("ok");
   } catch (error) {
-    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.writeHead(500);
     logger.error(error);
   }
   res.end();
@@ -78,6 +78,7 @@ const startServer = () => {
     if (appConfig.ENVIRONMENT === "PROD") {
       await gitService.initRepo();
     }
+
     startServer();
   } catch (error) {
     logger.error(error);
