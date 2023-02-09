@@ -1,4 +1,4 @@
-const { logger } = require("./logger.utils");
+const { logger } = require("./logger.util");
 
 module.exports.executeWithLogging = async (func, startMessage, endMessage) => {
   logger.info(startMessage);
