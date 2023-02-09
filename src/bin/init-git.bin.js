@@ -1,39 +1,55 @@
 require("dotenv").config();
 
-const path = require("path");
 const fs = require("fs");
 
 const {
   SOURCE_GIT_USERNAME,
   SOURCE_GIT_PASSWORD,
   SOURCE_REPO_URL,
-} = require("../config/app.config");
-const { generateOriginUrlWithCreds } = require("../services/git.service");
-const { logger } = require("../utils/logger.utils");
-const { runGitCommand } = require("../utils/git.utils");
+  REPOSITORY_DIR_PATH,
+} = require("../config/git.config");
+const { logger } = require("../utils/logger.util");
+const { generateOriginUrlWithCreds } = require("../utils/git.util");
+const { simpleGit, CleanOptions } = require("simple-git");
+simpleGit().clean(CleanOptions.FORCE);
 
-const repoDirPath = path.join(__dirname, "../../repo");
+const createRepoDirectory = async () => {
+  logger.info(
+    `Creating empty directory for local repository in ${REPOSITORY_DIR_PATH}`
+  );
 
-const cloneRepo = async () => {
-  const isDirectoryExist = fs.existsSync(repoDirPath);
+  await fs.promises.mkdir(REPOSITORY_DIR_PATH);
+
+  logger.info(`Created empty directory for local repository`);
+};
+
+const replaceDirectoryIfExist = async () => {
+  const isDirectoryExist = fs.existsSync(REPOSITORY_DIR_PATH);
 
   if (isDirectoryExist) {
-    logger.info(`Removing existing local repository from ${repoDirPath}`);
-    fs.rmSync(repoDirPath, { recursive: true, force: true });
+    logger.info(
+      `Removing existing local repository from ${REPOSITORY_DIR_PATH}`
+    );
+    await fs.promises.rm(REPOSITORY_DIR_PATH, { recursive: true, force: true });
     logger.info(`Local repository removal successful`);
   }
+};
 
-  const generatedUrl = generateOriginUrlWithCreds(
+const cloneRepo = async () => {
+  await replaceDirectoryIfExist();
+  await createRepoDirectory();
+
+  const git = simpleGit(REPOSITORY_DIR_PATH);
+
+  const sourceRemote = generateOriginUrlWithCreds(
     SOURCE_GIT_USERNAME,
     SOURCE_GIT_PASSWORD,
     SOURCE_REPO_URL
   );
 
-  const cloneCommand = `git clone ${generatedUrl} ${repoDirPath}`;
+  const cloneResult = await git.clone(sourceRemote, ".");
 
-  const clonseResult = await runGitCommand(cloneCommand, false);
-
-  return clonseResult;
+  return cloneResult;
 };
 
 (async () => {

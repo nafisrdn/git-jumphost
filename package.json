@@ -5,13 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "build": "node ./src/bin/init-git.bin"
+    "build": "node ./src/bin/init-git.bin",
+    "prod": "node ./src/bin/init-git.bin && node ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.0.3",
+    "simple-git": "^3.16.0",
     "winston": "^3.8.2"
   }
 }
