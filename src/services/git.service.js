@@ -44,7 +44,7 @@ const gitPushToTarget = async (branch) => {
     "--force": null,
   });
 
-  logger.info(JSON.stringify(pushResult));
+  logger.debug(JSON.stringify(pushResult));
 };
 
 const initRepo = () =>
@@ -52,7 +52,7 @@ const initRepo = () =>
     const buildProcess = exec(`npm run build`);
 
     buildProcess.stdout.on("data", (data) => {
-      logger.info(data);
+      logger.debug(data);
     });
 
     buildProcess.stderr.on("data", (error) => {
@@ -78,10 +78,10 @@ const gitFetchFromSource = async (branch) => {
   const fetchResult = await gitUtils.runGitCommand(
     `git fetch ${sourceRemote} ${branch}`
   );
-  logger.info(fetchResult);
+  logger.debug(fetchResult);
 
   const resetHard = await gitUtils.runGitCommand(`git reset --hard FETCH_HEAD`);
-  logger.info(resetHard);
+  logger.debug(resetHard);
 };
 
 module.exports.discardAndResetRepo = discardAndResetRepo;
