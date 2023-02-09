@@ -25,15 +25,6 @@ const discardAndResetRepo = (branch) =>
     `Local changes discarded and resetted for ${branch} branch`
   );
 
-const gitPullFromSource = (branch) =>
-  commonUtils.executeWithLogging(
-    async () => {
-      await gitService.gitPullFromSource(branch);
-    },
-    `Pulling from source for ${branch} branch`,
-    `Pull successful for ${branch} branch`
-  );
-
 const gitPushToTarget = (branch) =>
   commonUtils.executeWithLogging(
     async () => {
@@ -43,10 +34,18 @@ const gitPushToTarget = (branch) =>
     `Push successful for ${branch} branch`
   );
 
+const gitFetchFromSource = (branch) =>
+  commonUtils.executeWithLogging(
+    async () => {
+      await gitService.gitFetchFromSource(branch);
+    },
+    `Fetching from source for ${branch} branch`,
+    `Fetch successful`
+  );
+
 const handleGitFlow = async (branch) => {
   await discardAndResetRepo(branch);
-  await gitPullFromSource(branch);
-  await discardAndResetRepo(branch);
+  await gitFetchFromSource(branch);
   await gitPushToTarget(branch);
 };
 
@@ -69,7 +68,7 @@ const handleRequest = async (req, res) => {
 
 const startServer = () => {
   http.createServer(handleRequest).listen(appConfig.PORT, () => {
-    logger.info("Jumphost version 1.2.1");
+    logger.info("Jumphost version 1.2.2");
     logger.info(`Server is listening on port ${appConfig.PORT}`);
   });
 };
