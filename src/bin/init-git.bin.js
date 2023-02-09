@@ -8,8 +8,8 @@ const {
   SOURCE_REPO_URL,
   REPOSITORY_DIR_PATH,
 } = require("../config/git.config");
-const { logger } = require("../utils/logger.utils");
-const { generateOriginUrlWithCreds } = require("../utils/git.utils");
+const { logger } = require("../utils/logger.util");
+const { generateOriginUrlWithCreds } = require("../utils/git.util");
 const { simpleGit, CleanOptions } = require("simple-git");
 simpleGit().clean(CleanOptions.FORCE);
 

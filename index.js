@@ -4,10 +4,10 @@ const http = require("http");
 const appConfig = require("./src/config/app.config");
 const gitConfig = require("./src/config/git.config");
 const gitService = require("./src/services/git.service");
-const httpUtils = require("./src/utils/http.utils");
-const gitUtils = require("./src/utils/git.utils");
-const commonUtils = require("./src/utils/common.utils");
-const { logger } = require("./src/utils/logger.utils");
+const httpUtils = require("./src/utils/http.util");
+const gitUtils = require("./src/utils/git.util");
+const commonUtils = require("./src/utils/common.util");
+const { logger } = require("./src/utils/logger.util");
 
 const validateWebhookToken = (req) => {
   const webhookToken = req.headers["x-gitlab-token"];

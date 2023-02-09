@@ -1,8 +1,8 @@
 const exec = require("child_process").exec;
 const simpleGit = require("simple-git");
 const gitConfig = require("../config/git.config");
-const gitUtils = require("../utils/git.utils");
-const { logger } = require("../utils/logger.utils");
+const gitUtils = require("../utils/git.util");
+const { logger } = require("../utils/logger.util");
 const git = simpleGit(gitConfig.REPOSITORY_DIR_PATH);
 
 const gitPullFromSource = async (branch) => {
