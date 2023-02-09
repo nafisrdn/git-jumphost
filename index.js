@@ -68,7 +68,7 @@ const handleRequest = async (req, res) => {
 
 const startServer = () => {
   http.createServer(handleRequest).listen(appConfig.PORT, () => {
-    logger.info("Jumphost version 1.2.1");
+    logger.info("Jumphost version 1.2.2");
     logger.info(`Server is listening on port ${appConfig.PORT}`);
   });
 };
