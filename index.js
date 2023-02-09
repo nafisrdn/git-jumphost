@@ -76,10 +76,6 @@ const startServer = () => {
 
 (async () => {
   try {
-    if (appConfig.ENVIRONMENT === "PROD") {
-      await gitService.initRepo();
-    }
-
     startServer();
   } catch (error) {
     logger.error(error);
