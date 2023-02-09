@@ -16,6 +16,8 @@ const switchBranch = async (branch) => {
     await git.checkoutLocalBranch(branch);
     logger.info(`Branch "${branch}" successfully created`);
   }
+
+  logger.info(`Using branch "${branch}" for the following git actions`);
 };
 
 const discardAndResetRepo = async (branch) => {
