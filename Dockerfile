@@ -23,8 +23,10 @@ RUN chown -R node:root /app
 RUN mkdir /.npm
 RUN chgrp -R 0 /.npm && chmod -R g=u /.npm
 
-RUN mkdir /jumphost-logs
-RUN chgrp -R 0 /jumphost-logs && chmod -R g=u /jumphost-logs
+ARG ENVIRONMENT
+ENV ENVIRONMENT=${ENVIRONMENT}
+
+RUN if [ "$ENVIRONMENT" != "PROD" ]; then mkdir /jumphost-logs && chgrp -R 0 /jumphost-logs && chmod -R g=u /jumphost-logs; fi
 
 EXPOSE 8080
 USER 1000
