@@ -2,12 +2,14 @@ FROM node:16
 
 RUN adduser node root
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install tzdata
+RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get install tzdata -y
 
 RUN ln -sf /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 RUN echo "Asia/Jakarta" > /etc/timezone
 
 RUN dpkg-reconfigure --frontend noninteractive tzdata
+
 
 WORKDIR /app
 
@@ -31,5 +33,6 @@ RUN if [ "$ENVIRONMENT" != "PROD" ]; then mkdir /jumphost-logs && chgrp -R 0 /ju
 EXPOSE 8080
 USER 1000
 
-CMD ["sh", "-c", "npm run prod | tee /jumphost-logs/jumphost.log"]
+CMD [ "npm", "run", "prod" ]
+
 
