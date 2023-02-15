@@ -14,6 +14,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "simple-git": "^3.16.0",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "winston-daily-rotate-file": "^4.7.1"
   }
 }
