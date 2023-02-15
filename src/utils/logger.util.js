@@ -17,7 +17,7 @@ const logConfiguration = {
       const { message, timestamp, level } = info;
 
       let transformedMessage = message.replace(/\n/g, " ").trim();
-zz
+
       if (info instanceof Error) {
         transformedMessage = `${info.message} ${info.stack}`;
       }
