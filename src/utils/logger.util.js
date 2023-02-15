@@ -8,7 +8,7 @@ const logConfiguration = {
     new winston.transports.Console(),
     new DailyRotateFile({
       filename: appConfig.LOGS_DIRECTORY + "/jumphost-%DATE%.log",
-      datePattern: "DD-MM-YY-HH",
+      datePattern: "DD-MM-YYYY",
     }),
   ],
   format: winston.format.combine(
