@@ -1,9 +1,18 @@
 const winston = require("winston");
+const appConfig = require("../config/app.config");
+const DailyRotateFile = require("winston-daily-rotate-file");
 
-const logger = winston.createLogger({
-  level: "info",
+const logConfiguration = {
+  level: appConfig.ENVIRONMENT === "DEV" ? "debug" : "info",
+  transports: [
+    new winston.transports.Console(),
+    new DailyRotateFile({
+      filename: appConfig.LOGS_DIRECTORY + "/jumphost-%DATE%.log",
+      datePattern: "DD-MM-YYYY",
+    }),
+  ],
   format: winston.format.combine(
-    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    winston.format.timestamp({ format: "DD-MM-YYYY HH:mm:ss" }),
     winston.format.printf((info) => {
       const { message, timestamp, level } = info;
 
@@ -15,7 +24,7 @@ const logger = winston.createLogger({
       return `[${timestamp}] ${level}: ${transformedMessage}`;
     })
   ),
-  transports: [new winston.transports.Console()],
-});
+};
+const logger = winston.createLogger(logConfiguration);
 
 module.exports.logger = logger;

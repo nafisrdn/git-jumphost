@@ -5,18 +5,6 @@ const gitUtils = require("../utils/git.util");
 const { logger } = require("../utils/logger.util");
 const git = simpleGit(gitConfig.REPOSITORY_DIR_PATH);
 
-const gitPullFromSource = async (branch) => {
-  const sourceRemote = gitUtils.generateOriginUrlWithCreds(
-    gitConfig.SOURCE_GIT_USERNAME,
-    gitConfig.SOURCE_GIT_PASSWORD,
-    gitConfig.SOURCE_REPO_URL
-  );
-
-  const pullResult = await git.pull(sourceRemote, branch);
-
-  logger.info(JSON.stringify(pullResult));
-};
-
 const switchBranch = async (branch) => {
   const localBranchExists = await isBranchExistInLocal(branch);
 
@@ -28,21 +16,15 @@ const switchBranch = async (branch) => {
     await git.checkoutLocalBranch(branch);
     logger.info(`Branch "${branch}" successfully created`);
   }
+
+  logger.info(`Using branch "${branch}" for the following git actions`);
 };
 
 const discardAndResetRepo = async (branch) => {
-  const sourceRemote = gitUtils.generateOriginUrlWithCreds(
-    gitConfig.SOURCE_GIT_USERNAME,
-    gitConfig.SOURCE_GIT_PASSWORD,
-    gitConfig.SOURCE_REPO_URL
-  );
-
   await switchBranch(branch);
 
   await gitUtils.runGitCommand("git clean -f");
   await gitUtils.runGitCommand("git reset --hard");
-  await gitUtils.runGitCommand(`git fetch ${sourceRemote} ${branch}`);
-  await gitUtils.runGitCommand(`git reset --hard FETCH_HEAD`);
 };
 
 const isBranchExistInLocal = async (branch) => {
@@ -64,7 +46,7 @@ const gitPushToTarget = async (branch) => {
     "--force": null,
   });
 
-  logger.info(JSON.stringify(pushResult));
+  logger.debug(JSON.stringify(pushResult));
 };
 
 const initRepo = () =>
@@ -72,7 +54,7 @@ const initRepo = () =>
     const buildProcess = exec(`npm run build`);
 
     buildProcess.stdout.on("data", (data) => {
-      logger.info(data);
+      logger.debug(data);
     });
 
     buildProcess.stderr.on("data", (error) => {
@@ -88,8 +70,24 @@ const initRepo = () =>
     });
   });
 
+const gitFetchFromSource = async (branch) => {
+  const sourceRemote = gitUtils.generateOriginUrlWithCreds(
+    gitConfig.SOURCE_GIT_USERNAME,
+    gitConfig.SOURCE_GIT_PASSWORD,
+    gitConfig.SOURCE_REPO_URL
+  );
+
+  const fetchResult = await gitUtils.runGitCommand(
+    `git fetch ${sourceRemote} ${branch}`
+  );
+  logger.debug(fetchResult);
+
+  const resetHard = await gitUtils.runGitCommand(`git reset --hard FETCH_HEAD`);
+  logger.debug(resetHard);
+};
+
 module.exports.discardAndResetRepo = discardAndResetRepo;
 module.exports.switchBranch = switchBranch;
-module.exports.gitPullFromSource = gitPullFromSource;
 module.exports.gitPushToTarget = gitPushToTarget;
 module.exports.initRepo = initRepo;
+module.exports.gitFetchFromSource = gitFetchFromSource;
