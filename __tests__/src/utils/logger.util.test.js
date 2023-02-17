@@ -1,11 +1,13 @@
 const { getLogLevel } = require("../../../src/utils/logger.util");
 
 describe("getLogLevel", () => {
-  test.each([
-    ["DEV", "debug"],
-    ["PROD", "info"],
-  ])("returns the correct log level for %s", (env, expectedLogLevel) => {
-    const logLevel = getLogLevel(env);
-    expect(logLevel).toBe(expectedLogLevel);
+  it("should return 'debug' if the environment is DEV", () => {
+    const logLevel = getLogLevel("DEV");
+    expect(logLevel).toEqual("debug");
+  });
+
+  it("should return 'info' if the environment is not DEV", () => {
+    const logLevel = getLogLevel("PROD");
+    expect(logLevel).toEqual("info");
   });
 });
