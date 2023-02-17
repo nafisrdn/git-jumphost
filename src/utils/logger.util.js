@@ -7,10 +7,16 @@ const getLogLevel = (env) => (env === "DEV" ? "debug" : "info");
 const logFileName = appConfig.LOGS_DIRECTORY + "/jumphost-%DATE%.log";
 
 const generateLogText = (info) => {
-  let transformedMessage = message.replace(/\n/g, " ").trim();
+  const { message, stack, timestamp, level } = info;
+
+  let transformedMessage = message;
+
+  if (typeof message === "string") {
+    transformedMessage = message.replace(/\n/g, " ").trim();
+  }
 
   if (info instanceof Error) {
-    transformedMessage = `${info.message} ${info.stack}`;
+    transformedMessage = `${message} ${stack}`;
   }
 
   return `[${timestamp}] ${level}: ${transformedMessage}`;
