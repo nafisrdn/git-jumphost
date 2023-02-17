@@ -60,7 +60,7 @@ const handleRequest = async (req, res) => {
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.write("ok");
   } catch (error) {
-    res.writeHead(500);
+    res.writeHead(400);
     logger.error(error);
   }
   res.end();
