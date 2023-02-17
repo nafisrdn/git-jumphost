@@ -6,11 +6,13 @@ const {
 describe("getLogLevel", () => {
   it("should return 'debug' if the environment is DEV", () => {
     const logLevel = getLogLevel("DEV");
+
     expect(logLevel).toEqual("debug");
   });
 
   it("should return 'info' if the environment is not DEV", () => {
     const logLevel = getLogLevel("PROD");
+
     expect(logLevel).toEqual("info");
   });
 });
@@ -22,6 +24,7 @@ describe("generateLogText", () => {
       timestamp: "10-02-2022 15:30:00",
       level: "info",
     };
+
     expect(generateLogText(info)).toBe(
       "[10-02-2022 15:30:00] info: This is a test message"
     );
