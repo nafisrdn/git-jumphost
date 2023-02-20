@@ -4,13 +4,13 @@ const fs = require("fs");
 
 const { REPOSITORY_DIR_PATH } = require("../config/git.config");
 const { logger } = require("../utils/logger.util");
-const { getReposInfo } = require("../utils/git.util");
+const gitService = require("../services/git.service");
 const { simpleGit, CleanOptions } = require("simple-git");
 
 simpleGit().clean(CleanOptions.FORCE);
 
 const createRepoDirectory = async () => {
-  const repos = getReposInfo();
+  const repos = gitService.getRepositories();
 
   for (let i = 0; i < repos.length; i++) {
     const repo = repos[i];
@@ -43,7 +43,7 @@ const cloneRepo = async () => {
   await replaceDirectoryIfExist();
   await createRepoDirectory();
 
-  const repos = getReposInfo();
+  const repos = gitService.getRepositories();
 
   for (let i = 0; i < repos.length; i++) {
     const repo = repos[i];
