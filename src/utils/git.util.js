@@ -8,10 +8,10 @@ const {
   TARGET_GIT_PASSWORD,
   REPOSITORY_DIR_PATH,
 } = require("../config/git.config");
+const { removeUrlProtocol } = require("./http.util");
 
 const exec = require("child_process").exec;
 
-const runGitCommand = (command, useCwd = true) =>
   new Promise((resolve, reject) => {
     exec(
       `${command} 2>&1`,
@@ -26,7 +26,7 @@ const runGitCommand = (command, useCwd = true) =>
   });
 
 const generateOriginUrlWithCreds = (gitUsername, gitPassowrd, repoUrl) =>
-  `https://${gitUsername}:${gitPassowrd}@${repoUrl}`;
+  `https://${gitUsername}:${gitPassowrd}@${removeUrlProtocol(repoUrl)}`;
 
 const getBranchName = (body) => {
   const { ref } = body;
@@ -40,7 +40,10 @@ const getBranchName = (body) => {
 const getRepoLocalDirectory = (sourceRepoUrl, targetRepoUrl) =>
   path.join(
     REPOSITORY_DIR_PATH,
-    `${sourceRepoUrl.replace(/\//g, "-")}_${targetRepoUrl.replace(/\//g, "-")}`
+    `${removeUrlProtocol(sourceRepoUrl).replace(
+      /\//g,
+      "-"
+    )}_${removeUrlProtocol(targetRepoUrl).replace(/\//g, "-")}`
   );
 
 const getReposInfo = () => {
