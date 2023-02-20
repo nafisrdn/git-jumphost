@@ -14,13 +14,18 @@ const logConfiguration = {
   format: winston.format.combine(
     winston.format.timestamp({ format: "DD-MM-YYYY HH:mm:ss" }),
     winston.format.printf((info) => {
-      const { message, timestamp, level } = info;
+      const { message, stack, timestamp, level } = info;
 
-      let transformedMessage = message.replace(/\n/g, " ").trim();
+      let transformedMessage = message;
+
+      if (typeof message === "string") {
+        transformedMessage = message.replace(/\n/g, " ").trim();
+      }
 
       if (info instanceof Error) {
-        transformedMessage = `${info.message} ${info.stack}`;
+        transformedMessage = `${message} ${stack}`;
       }
+
       return `[${timestamp}] ${level}: ${transformedMessage}`;
     })
   ),
