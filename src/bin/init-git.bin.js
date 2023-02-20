@@ -2,32 +2,36 @@ require("dotenv").config();
 
 const fs = require("fs");
 
-const {
-  SOURCE_GIT_USERNAME,
-  SOURCE_GIT_PASSWORD,
-  SOURCE_REPO_URL,
-  REPOSITORY_DIR_PATH,
-} = require("../config/git.config");
+const { REPOSITORY_DIR_PATH } = require("../config/git.config");
 const { logger } = require("../utils/logger.util");
-const { generateOriginUrlWithCreds } = require("../utils/git.util");
+const { getReposInfo } = require("../utils/git.util");
 const { simpleGit, CleanOptions } = require("simple-git");
+
 simpleGit().clean(CleanOptions.FORCE);
 
 const createRepoDirectory = async () => {
-  logger.info(
-    `Creating empty directory for local repository in ${REPOSITORY_DIR_PATH}`
-  );
+  const repos = getReposInfo();
 
-  await fs.promises.mkdir(REPOSITORY_DIR_PATH);
+  for (let i = 0; i < repos.length; i++) {
+    const repo = repos[i];
 
-  logger.info(`Created empty directory for local repository`);
+    logger.debug(
+      `Creating empty directory for local repository: ${repo.localRepoDirectoryName}`
+    );
+
+    await fs.promises.mkdir(repo.localRepoDirectoryName, { recursive: true });
+
+    logger.info(
+      `Created empty directory for local repository: ${repo.localRepoDirectoryName}`
+    );
+  }
 };
 
 const replaceDirectoryIfExist = async () => {
   const isDirectoryExist = fs.existsSync(REPOSITORY_DIR_PATH);
 
   if (isDirectoryExist) {
-    logger.info(
+    logger.debug(
       `Removing existing local repository from ${REPOSITORY_DIR_PATH}`
     );
     await fs.promises.rm(REPOSITORY_DIR_PATH, { recursive: true, force: true });
@@ -39,17 +43,17 @@ const cloneRepo = async () => {
   await replaceDirectoryIfExist();
   await createRepoDirectory();
 
-  const git = simpleGit(REPOSITORY_DIR_PATH);
+  const repos = getReposInfo();
 
-  const sourceRemote = generateOriginUrlWithCreds(
-    SOURCE_GIT_USERNAME,
-    SOURCE_GIT_PASSWORD,
-    SOURCE_REPO_URL
-  );
+  for (let i = 0; i < repos.length; i++) {
+    const repo = repos[i];
 
-  const cloneResult = await git.clone(sourceRemote, ".");
+    const git = simpleGit(repo.localRepoDirectoryName);
 
-  return cloneResult;
+    const cloneResult = await git.clone(repo.sourceOriginUrlWithCreds, ".");
+
+    logger.info(cloneResult);
+  }
 };
 
 (async () => {
