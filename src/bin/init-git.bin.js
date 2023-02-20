@@ -16,13 +16,13 @@ const createRepoDirectory = async () => {
     const repo = repos[i];
 
     logger.debug(
-      `Creating empty directory for local repository: ${repo.localRepoDirectoryName}`
+      `Creating empty directory for local repository: ${repo.getRepoLocalDirectory()}`
     );
 
-    await fs.promises.mkdir(repo.localRepoDirectoryName, { recursive: true });
+    await fs.promises.mkdir(repo.getRepoLocalDirectory(), { recursive: true });
 
     logger.info(
-      `Created empty directory for local repository: ${repo.localRepoDirectoryName}`
+      `Created empty directory for local repository: ${repo.getRepoLocalDirectory()}`
     );
   }
 };
@@ -48,9 +48,12 @@ const cloneRepo = async () => {
   for (let i = 0; i < repos.length; i++) {
     const repo = repos[i];
 
-    const git = simpleGit(repo.localRepoDirectoryName);
+    const git = simpleGit(repo.getRepoLocalDirectory());
 
-    const cloneResult = await git.clone(repo.sourceOriginUrlWithCreds, ".");
+    const cloneResult = await git.clone(
+      repo.getOriginUrlWithCreds("source"),
+      "."
+    );
 
     logger.info(cloneResult);
   }
