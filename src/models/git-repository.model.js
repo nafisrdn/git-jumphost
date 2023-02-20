@@ -1,7 +1,10 @@
 const path = require("path");
-const { REPOSITORY_DIR_PATH } = require("../config/git.config");
-const { generateOriginUrlWithCreds } = require("../utils/git.util");
-const { removeUrlProtocol } = require("../utils/http.util");
+const simpleGit = require("simple-git");
+
+const gitConfig = require("../config/git.config");
+const httpUtil = require("../utils/http.util");
+const gitUtil = require("../utils/git.util");
+const { logger } = require("../utils/logger.util");
 
 class GitRepository {
   constructor(
@@ -19,32 +22,91 @@ class GitRepository {
     this.targetRepoUrl = targetRepoUrl;
     this.targetGitUsername = targetGitUsername;
     this.targetGitPassword = targetGitPassword;
+
+    this.git = simpleGit(this.getRepoLocalDirectory);
   }
 
   getRepoLocalDirectory() {
     return path.join(
-      REPOSITORY_DIR_PATH,
-      `${removeUrlProtocol(this.sourceRepoUrl).replace(
-        /\//g,
-        "-"
-      )}_${removeUrlProtocol(this.targetRepoUrl).replace(/\//g, "-")}`
+      gitConfig.REPOSITORY_DIR_PATH,
+      `${httpUtil
+        .removeUrlProtocol(this.sourceRepoUrl)
+        .replace(/\//g, "-")}_${httpUtil
+        .removeUrlProtocol(this.targetRepoUrl)
+        .replace(/\//g, "-")}`
     );
   }
 
-  getSourceOriginUrlWithCreds() {
-    return generateOriginUrlWithCreds(
-      this.sourceGitUsername,
-      this.sourceGitPassword,
-      this.sourceRepoUrl
-    );
+  getOriginUrlWithCreds(alias) {
+    if (alias === "source") {
+      return gitUtil.generateOriginUrlWithCreds(
+        this.sourceGitUsername,
+        this.sourceGitPassword,
+        this.sourceRepoUrl
+      );
+    } else {
+      return gitUtil.generateOriginUrlWithCreds(
+        this.targeteGitUsername,
+        this.targeteGitPassword,
+        this.targeteRepoUrl
+      );
+    }
   }
 
-  getTargetOriginUrlWithCreds() {
-    return generateOriginUrlWithCreds(
-      this.targetGitUsername,
-      this.targetGitPassword,
-      this.targetRepoUrl
+  async isBranchExistInLocal(branch) {
+    const localBranches = await this.git.branchLocal();
+
+    const isExist = localBranches.all.includes(branch);
+
+    return isExist;
+  }
+
+  async switchBranch(branch) {
+    const localBranchExists = await this.isBranchExistInLocal(branch);
+
+    if (localBranchExists) {
+      logger.info(`Branch "${branch}" exists in local`);
+      await this.git.checkout(branch);
+    } else {
+      logger.info(`Branch "${branch}" does not exist in local, creating it`);
+      await this.git.checkoutLocalBranch(branch);
+      logger.info(`Branch "${branch}" successfully created`);
+    }
+
+    logger.info(`Using branch "${branch}" for the following git actions`);
+  }
+
+  async discardAndResetRepo(branch) {
+    await this.switchBranch(branch);
+
+    await gitUtil.runGitCommand("git clean -f");
+    await gitUtil.runGitCommand("git reset --hard");
+  }
+
+  async gitPushToTarget(branch) {
+    const pushResult = await this.git.push(
+      this.getOriginUrlWithCreds("target"),
+      branch,
+      {
+        "--force": null,
+      }
     );
+
+    logger.debug(JSON.stringify(pushResult));
+  }
+
+  async gitFetchFromSource(branch) {
+    const fetchResult = await gitUtil.runGitCommand(
+      `git fetch ${this.getOriginUrlWithCreds("source")} ${branch}`
+    );
+
+    logger.debug(fetchResult);
+
+    const resetHard = await gitUtil.runGitCommand(
+      `git reset --hard FETCH_HEAD`
+    );
+
+    logger.debug(resetHard);
   }
 }
 
