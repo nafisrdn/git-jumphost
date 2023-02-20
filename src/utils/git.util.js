@@ -1,3 +1,4 @@
+const path = require("path");
 const {
   SOURCE_REPO_URL,
   SOURCE_GIT_USERNAME,
@@ -5,6 +6,7 @@ const {
   TARGET_REPO_URL,
   TARGET_GIT_USERNAME,
   TARGET_GIT_PASSWORD,
+  REPOSITORY_DIR_PATH,
 } = require("../config/git.config");
 
 const exec = require("child_process").exec;
@@ -36,24 +38,45 @@ const getBranchName = (body) => {
 };
 
 const getRepoLocalDirectory = (sourceRepoUrl, targetRepoUrl) =>
-  `${sourceRepoUrl.replace(/\//g, "-")}_${targetRepoUrl.replace(/\//g, "-")}`;
+  path.join(
+    REPOSITORY_DIR_PATH,
+    `${sourceRepoUrl.replace(/\//g, "-")}_${targetRepoUrl.replace(/\//g, "-")}`
+  );
 
 const getReposInfo = () => {
   const repos = [];
 
   SOURCE_REPO_URL.split(",").forEach((sourceRepoUrl, index) => {
+    const sourceGitUsername = SOURCE_GIT_USERNAME.split(",")[index];
+    const sourceGitPassword = SOURCE_GIT_PASSWORD.split(",")[index];
+
+    const targetRepoUrl = TARGET_REPO_URL.split(",")[index];
+    const targetGitUsername = TARGET_GIT_USERNAME.split(",")[index];
+    const targetGitPassword = TARGET_GIT_PASSWORD.split(",")[index];
+
     const repo = {
       localRepoDirectoryName: getRepoLocalDirectory(
         sourceRepoUrl,
         TARGET_REPO_URL.split(",")[index]
       ),
-      sourceRepoUrl,
-      sourceGitUsername: SOURCE_GIT_USERNAME.split(",")[index],
-      sourceGitPassword: SOURCE_GIT_PASSWORD.split(",")[index],
 
-      targetRepoUrl: TARGET_REPO_URL.split(",")[index],
-      targetGitUsername: TARGET_GIT_USERNAME.split(",")[index],
-      targetGitPassword: TARGET_GIT_PASSWORD.split(",")[index],
+      sourceRepoUrl,
+      sourceGitUsername,
+      sourceGitPassword,
+      sourceOriginUrlWithCreds: generateOriginUrlWithCreds(
+        sourceGitUsername,
+        sourceGitPassword,
+        sourceRepoUrl
+      ),
+
+      targetRepoUrl,
+      targetGitUsername,
+      targetGitPassword,
+      sourceOriginUrlWithCreds: generateOriginUrlWithCreds(
+        targetGitUsername,
+        targetGitPassword,
+        targetRepoUrl
+      ),
     };
 
     repos.push(repo);
