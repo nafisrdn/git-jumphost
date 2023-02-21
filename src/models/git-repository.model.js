@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const simpleGit = require("simple-git");
 
 const gitConfig = require("../config/git.config");
 const httpUtil = require("../utils/http.util");
@@ -22,19 +23,18 @@ class GitRepository {
     this.targetRepoUrl = targetRepoUrl;
     this.targetGitUsername = targetGitUsername;
     this.targetGitPassword = targetGitPassword;
+  }
 
-    this.options = {
+  async initGit() {
+    simpleGit().clean(simpleGit.CleanOptions.FORCE);
+
+    const options = {
       baseDir: this.getRepoLocalDirectory(),
       binary: "git",
       trimmed: false,
     };
-  }
 
-  async initGit() {
-    const simpleGit = require("simple-git");
-    simpleGit().clean(simpleGit.CleanOptions.FORCE);
-
-    this.git = simpleGit(this.options);
+    this.git = simpleGit(options);
   }
 
   async initLocalRepo() {
