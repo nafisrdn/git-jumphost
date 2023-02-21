@@ -1,30 +1,30 @@
 const exec = require("child_process").exec;
+const { removeUrlProtocol } = require("./http.util");
 
-module.exports.runGitCommand = (command, useCwd = true) =>
+const runGitCommand = (command, cwd = null) =>
   new Promise((resolve, reject) => {
-    exec(
-      `${command} 2>&1`,
-      { cwd: useCwd ? "repo" : null },
-      (error, stdout, stderr) => {
-        if (error) {
-          reject(`${error} \nstderr: ${stderr} \nstdout: ${stdout}`);
-        }
-        resolve(stdout);
+    exec(`${command} 2>&1`, { cwd }, (error, stdout, stderr) => {
+      if (error) {
+        reject(`${error} \nstderr: ${stderr} \nstdout: ${stdout}`);
       }
-    );
+      resolve(stdout);
+    });
   });
 
-module.exports.generateOriginUrlWithCreds = (
-  gitUsername,
-  gitPassowrd,
-  repoUrl
-) => `https://${gitUsername}:${gitPassowrd}@${repoUrl}`;
+const generateOriginUrlWithCreds = (gitUsername, gitPassowrd, repoUrl) =>
+  `https://${gitUsername}:${gitPassowrd}@${removeUrlProtocol(repoUrl)}`;
 
-module.exports.getBranchName = (body) => {
+const getBranchName = (body) => {
   const { ref } = body;
 
   const branchIndex = ref.indexOf("heads/") + "heads/".length;
   const branchName = ref.substring(branchIndex);
 
   return branchName;
+};
+
+module.exports = {
+  runGitCommand,
+  generateOriginUrlWithCreds,
+  getBranchName,
 };

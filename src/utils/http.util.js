@@ -1,4 +1,4 @@
-module.exports.getRequestBody = (req) => {
+const getRequestBody = (req) => {
   return new Promise((resolve, reject) => {
     let body = "";
     req.on("data", (chunk) => {
@@ -12,3 +12,7 @@ module.exports.getRequestBody = (req) => {
     });
   });
 };
+
+const removeUrlProtocol = (url) => url.replace(/^https?:\/\//i, "");
+
+module.exports = { getRequestBody, removeUrlProtocol };
