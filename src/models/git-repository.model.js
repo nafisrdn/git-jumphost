@@ -79,8 +79,11 @@ class GitRepository {
   async discardAndResetRepo(branch) {
     await this.switchBranch(branch);
 
-    await gitUtil.runGitCommand("git clean -f");
-    await gitUtil.runGitCommand("git reset --hard");
+    await gitUtil.runGitCommand("git clean -f", this.getRepoLocalDirectory());
+    await gitUtil.runGitCommand(
+      "git reset --hard",
+      this.getRepoLocalDirectory()
+    );
   }
 
   async gitPushToTarget(branch) {
@@ -97,13 +100,15 @@ class GitRepository {
 
   async gitFetchFromSource(branch) {
     const fetchResult = await gitUtil.runGitCommand(
-      `git fetch ${this.getOriginUrlWithCreds("source")} ${branch}`
+      `git fetch ${this.getOriginUrlWithCreds("source")} ${branch}`,
+      this.getRepoLocalDirectory()
     );
 
     logger.debug(fetchResult);
 
     const resetHard = await gitUtil.runGitCommand(
-      `git reset --hard FETCH_HEAD`
+      `git reset --hard FETCH_HEAD`,
+      this.getRepoLocalDirectory()
     );
 
     logger.debug(resetHard);
