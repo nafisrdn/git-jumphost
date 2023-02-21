@@ -1,3 +1,4 @@
+const fs = require("fs");
 const path = require("path");
 const simpleGit = require("simple-git");
 
@@ -23,7 +24,53 @@ class GitRepository {
     this.targetGitUsername = targetGitUsername;
     this.targetGitPassword = targetGitPassword;
 
+    this.git = null;
+  }
+
+  async initGit() {
     this.git = simpleGit(this.getRepoLocalDirectory());
+  }
+
+  async initLocalRepo() {
+    await this.removeLocalDirectory();
+    await this.createLocalRepoDirectory();
+
+    await this.initGit();
+
+    const cloneResult = await this.git.clone(
+      this.getOriginUrlWithCreds("source")
+    );
+
+    logger.info(cloneResult);
+  }
+
+  async createLocalRepoDirectory() {
+    logger.debug(
+      `Creating empty directory for local repository: ${this.getRepoLocalDirectory()}`
+    );
+
+    await fs.promises.mkdir(this.getRepoLocalDirectory(), {
+      recursive: true,
+    });
+
+    logger.info(
+      `Created empty directory for local repository: ${this.getRepoLocalDirectory()}`
+    );
+  }
+
+  async removeLocalDirectory() {
+    logger.debug(
+      `Removing existing local repository from ${this.getRepoLocalDirectory()}`
+    );
+
+    await fs.promises.rm(this.getRepoLocalDirectory(), {
+      recursive: true,
+      force: true,
+    });
+
+    logger.info(
+      `Local repository ${this.getRepoLocalDirectory()} removal successful`
+    );
   }
 
   getRepoLocalDirectory() {

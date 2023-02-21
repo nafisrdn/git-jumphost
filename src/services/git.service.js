@@ -1,6 +1,3 @@
-const exec = require("child_process").exec;
-
-const { logger } = require("../utils/logger.util");
 const {
   SOURCE_REPO_URL,
   SOURCE_GIT_USERNAME,
@@ -11,10 +8,10 @@ const {
 } = require("../config/git.config");
 const GitRepository = require("../models/git-repository.model");
 
-const getRepositories = () => {
-  const repos = [];
+let repositories = [];
 
-  SOURCE_REPO_URL.split(",").forEach((sourceRepoUrl, index) => {
+const initRepositories = (initLocalRepo = false) => {
+  SOURCE_REPO_URL.split(",").forEach(async (sourceRepoUrl, index) => {
     const sourceGitUsername = SOURCE_GIT_USERNAME.split(",")[index];
     const sourceGitPassword = SOURCE_GIT_PASSWORD.split(",")[index];
 
@@ -31,34 +28,19 @@ const getRepositories = () => {
       targetGitPassword
     );
 
-    repos.push(repo);
-  });
+    if (initLocalRepo) await repo.initLocalRepo();
 
-  return repos;
+    await repo.initGit();
+
+    repositories[index] = repo;
+  });
 };
 
-const initRepo = () =>
-  new Promise((resolve, reject) => {
-    const buildProcess = exec(`npm run build`);
-
-    buildProcess.stdout.on("data", (data) => {
-      logger.debug(data);
-    });
-
-    buildProcess.stderr.on("data", (error) => {
-      reject(error);
-    });
-
-    buildProcess.on("exit", (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(`Build process exited with code: ${code}`);
-      }
-    });
-  });
+const getRepositories = () => {
+  return repositories;
+};
 
 const getRepoBySourceUrl = (url) =>
   getRepositories().filter((repo) => repo.sourceRepoUrl === url)[0];
 
-module.exports = { initRepo, getRepositories, getRepoBySourceUrl };
+module.exports = { initRepositories, getRepositories, getRepoBySourceUrl };
