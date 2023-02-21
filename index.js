@@ -68,9 +68,9 @@ const handleRequest = async (req, res) => {
 };
 
 const startServer = () => {
-  http.createServer(handleRequest).listen(appConfig.PORT, () => {
+  http.createServer(handleRequest).listen(appConfig.PORT, async () => {
     logger.info(`Jumphost version ${appConfig.VERSION}`);
-    gitService.initRepositories(false);
+    await gitService.initRepositories(false);
     logger.info("Git init done");
     logger.info(`Server is listening on port ${appConfig.PORT}`);
   });

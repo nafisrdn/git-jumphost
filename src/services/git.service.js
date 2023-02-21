@@ -10,14 +10,15 @@ const GitRepository = require("../models/git-repository.model");
 
 let repositories = [];
 
-const initRepositories = (initLocalRepo = false) => {
-  SOURCE_REPO_URL.split(",").forEach(async (sourceRepoUrl, index) => {
-    const sourceGitUsername = SOURCE_GIT_USERNAME.split(",")[index];
-    const sourceGitPassword = SOURCE_GIT_PASSWORD.split(",")[index];
+const initRepositories = async (initLocalRepo = false) => {
+  for (let i = 0; i < SOURCE_REPO_URL.split(",").length; i++) {
+    const sourceRepoUrl = SOURCE_REPO_URL.split(",")[i];
+    const sourceGitUsername = SOURCE_GIT_USERNAME.split(",")[i];
+    const sourceGitPassword = SOURCE_GIT_PASSWORD.split(",")[i];
 
-    const targetRepoUrl = TARGET_REPO_URL.split(",")[index];
-    const targetGitUsername = TARGET_GIT_USERNAME.split(",")[index];
-    const targetGitPassword = TARGET_GIT_PASSWORD.split(",")[index];
+    const targetRepoUrl = TARGET_REPO_URL.split(",")[i];
+    const targetGitUsername = TARGET_GIT_USERNAME.split(",")[i];
+    const targetGitPassword = TARGET_GIT_PASSWORD.split(",")[i];
 
     const repo = new GitRepository(
       sourceRepoUrl,
@@ -28,12 +29,14 @@ const initRepositories = (initLocalRepo = false) => {
       targetGitPassword
     );
 
-    if (initLocalRepo) await repo.initLocalRepo();
+    if (initLocalRepo) {
+      await repo.initLocalRepo();
+    }
 
     await repo.initGit();
 
-    repositories[index] = repo;
-  });
+    repositories[i] = repo;
+  }
 };
 
 const getRepositories = () => {

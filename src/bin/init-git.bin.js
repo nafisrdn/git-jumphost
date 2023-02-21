@@ -5,7 +5,7 @@ const { logger } = require("../utils/logger.util");
 
 (async () => {
   try {
-    gitService.initRepositories(true);
+    await gitService.initRepositories(true);
 
     logger.info("Repository cloning successful");
   } catch (error) {
