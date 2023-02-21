@@ -23,7 +23,7 @@ class GitRepository {
     this.targetGitUsername = targetGitUsername;
     this.targetGitPassword = targetGitPassword;
 
-    this.git = simpleGit(this.getRepoLocalDirectory);
+    this.git = simpleGit(this.getRepoLocalDirectory());
   }
 
   getRepoLocalDirectory() {
