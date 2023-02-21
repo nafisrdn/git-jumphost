@@ -1,7 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const simpleGit = require("simple-git");
-simpleGit().clean(simpleGit.CleanOptions.FORCE);
 
 const gitConfig = require("../config/git.config");
 const httpUtil = require("../utils/http.util");
@@ -33,6 +31,9 @@ class GitRepository {
   }
 
   async initGit() {
+    const simpleGit = require("simple-git");
+    simpleGit().clean(simpleGit.CleanOptions.FORCE);
+
     this.git = simpleGit(this.options);
   }
 
