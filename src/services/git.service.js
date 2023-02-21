@@ -1,6 +1,3 @@
-const exec = require("child_process").exec;
-
-const { logger } = require("../utils/logger.util");
 const {
   SOURCE_REPO_URL,
   SOURCE_GIT_USERNAME,
@@ -11,16 +8,17 @@ const {
 } = require("../config/git.config");
 const GitRepository = require("../models/git-repository.model");
 
-const getRepositories = () => {
-  const repos = [];
+let repositories = [];
 
-  SOURCE_REPO_URL.split(",").forEach((sourceRepoUrl, index) => {
-    const sourceGitUsername = SOURCE_GIT_USERNAME.split(",")[index];
-    const sourceGitPassword = SOURCE_GIT_PASSWORD.split(",")[index];
+const initRepositories = async (initLocalRepo = false) => {
+  for (let i = 0; i < SOURCE_REPO_URL.split(",").length; i++) {
+    const sourceRepoUrl = SOURCE_REPO_URL.split(",")[i];
+    const sourceGitUsername = SOURCE_GIT_USERNAME.split(",")[i];
+    const sourceGitPassword = SOURCE_GIT_PASSWORD.split(",")[i];
 
-    const targetRepoUrl = TARGET_REPO_URL.split(",")[index];
-    const targetGitUsername = TARGET_GIT_USERNAME.split(",")[index];
-    const targetGitPassword = TARGET_GIT_PASSWORD.split(",")[index];
+    const targetRepoUrl = TARGET_REPO_URL.split(",")[i];
+    const targetGitUsername = TARGET_GIT_USERNAME.split(",")[i];
+    const targetGitPassword = TARGET_GIT_PASSWORD.split(",")[i];
 
     const repo = new GitRepository(
       sourceRepoUrl,
@@ -31,34 +29,21 @@ const getRepositories = () => {
       targetGitPassword
     );
 
-    repos.push(repo);
-  });
+    if (initLocalRepo) {
+      await repo.initLocalRepo();
+    }
 
-  return repos;
+    await repo.initGit();
+
+    repositories[i] = repo;
+  }
 };
 
-const initRepo = () =>
-  new Promise((resolve, reject) => {
-    const buildProcess = exec(`npm run build`);
-
-    buildProcess.stdout.on("data", (data) => {
-      logger.debug(data);
-    });
-
-    buildProcess.stderr.on("data", (error) => {
-      reject(error);
-    });
-
-    buildProcess.on("exit", (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(`Build process exited with code: ${code}`);
-      }
-    });
-  });
+const getRepositories = () => {
+  return repositories;
+};
 
 const getRepoBySourceUrl = (url) =>
   getRepositories().filter((repo) => repo.sourceRepoUrl === url)[0];
 
-module.exports = { initRepo, getRepositories, getRepoBySourceUrl };
+module.exports = { initRepositories, getRepositories, getRepoBySourceUrl };
