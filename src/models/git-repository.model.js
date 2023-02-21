@@ -26,7 +26,7 @@ class GitRepository {
     this.targetGitPassword = targetGitPassword;
 
     this.options = {
-      baseDir: this.getRepoLocalDirectory,
+      baseDir: this.getRepoLocalDirectory(),
       binary: "git",
       trimmed: false,
     };
