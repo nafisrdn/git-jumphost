@@ -44,7 +44,8 @@ class GitRepository {
     await this.initGit();
 
     const cloneResult = await this.git.clone(
-      this.getOriginUrlWithCreds("source")
+      this.getOriginUrlWithCreds("source"),
+      "."
     );
 
     logger.info(cloneResult);
