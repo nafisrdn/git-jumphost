@@ -46,9 +46,9 @@ class GitRepository {
       );
     } else {
       return gitUtil.generateOriginUrlWithCreds(
-        this.targeteGitUsername,
-        this.targeteGitPassword,
-        this.targeteRepoUrl
+        this.targetGitUsername,
+        this.targetGitPassword,
+        this.targetRepoUrl
       );
     }
   }
@@ -87,13 +87,11 @@ class GitRepository {
   }
 
   async gitPushToTarget(branch) {
-    const pushResult = await this.git.push(
-      this.getOriginUrlWithCreds("target"),
-      branch,
-      {
-        "--force": null,
-      }
-    );
+    const targetOriginUrl = this.getOriginUrlWithCreds("target");
+
+    const pushResult = await this.git.push(targetOriginUrl, branch, {
+      "--force": null,
+    });
 
     logger.debug(JSON.stringify(pushResult));
   }
