@@ -1,9 +1,15 @@
 const path = require("path");
 
-module.exports.PORT = process.env.PORT ? parseInt(process.env.PORT) : 8080;
-const path = require("path");
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
-module.exports.ENVIRONMENT = process.env.ENVIRONMENT || "DEV";
-module.exports.LOGS_DIRECTORY =
+const ENVIRONMENT = process.env.ENVIRONMENT || "DEV";
+const LOGS_DIRECTORY =
   process.env.LOGS_DIRECTORY || path.join(__dirname, "../../logs");
-module.exports.VERSION = "1.3.1";
+const VERSION = "1.3.1";
+
+module.exports = {
+  PORT,
+  ENVIRONMENT,
+  LOGS_DIRECTORY,
+  VERSION,
+};
