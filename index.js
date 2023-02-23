@@ -16,37 +16,37 @@ const validateWebhookToken = (req) => {
   }
 };
 
-const discardAndResetRepo = (branch) =>
+const discardAndResetRepo = (repo, branch) =>
   commonUtils.executeWithLogging(
     async () => {
-      await gitService.discardAndResetRepo(branch);
+      await repo.discardAndResetRepo(branch);
     },
-    `Discarding and resetting local changes for ${branch} branch`,
-    `Local changes discarded and resetted for ${branch} branch`
+    `Discarding and resetting local changes for ${repo.sourceRepoUrl} - ${branch}`,
+    `Local changes discarded and resetted for ${repo.sourceRepoUrl} - ${branch}`
   );
 
-const gitPushToTarget = (branch) =>
+const gitPushToTarget = (repo, branch) =>
   commonUtils.executeWithLogging(
     async () => {
-      await gitService.gitPushToTarget(branch);
+      await repo.gitPushToTarget(branch);
     },
-    `Pushing to target for ${branch} branch`,
-    `Push successful for ${branch} branch`
+    `Pushing to target for ${repo.sourceRepoUrl} - ${branch}`,
+    `Push successful for ${repo.sourceRepoUrl} - ${branch}`
   );
 
-const gitFetchFromSource = (branch) =>
+const gitFetchFromSource = (repo, branch) =>
   commonUtils.executeWithLogging(
     async () => {
-      await gitService.gitFetchFromSource(branch);
+      await repo.gitFetchFromSource(branch);
     },
-    `Fetching from source for ${branch} branch`,
+    `Fetching from source for ${repo.sourceRepoUrl} - ${branch}`,
     `Fetch successful`
   );
 
-const handleGitFlow = async (branch) => {
-  await discardAndResetRepo(branch);
-  await gitFetchFromSource(branch);
-  await gitPushToTarget(branch);
+const handleGitFlow = async (repo, branch) => {
+  await discardAndResetRepo(repo, branch);
+  await gitFetchFromSource(repo, branch);
+  await gitPushToTarget(repo, branch);
 };
 
 const handleRequest = async (req, res) => {
@@ -54,8 +54,9 @@ const handleRequest = async (req, res) => {
     validateWebhookToken(req);
     const body = await httpUtils.getRequestBody(req);
     const branch = gitUtils.getBranchName(body);
+    const repo = gitService.getRepoBySourceUrl(body.repository.git_http_url);
 
-    await handleGitFlow(branch);
+    await handleGitFlow(repo, branch);
 
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.write("ok");
@@ -67,8 +68,10 @@ const handleRequest = async (req, res) => {
 };
 
 const startServer = () => {
-  http.createServer(handleRequest).listen(appConfig.PORT, () => {
+  http.createServer(handleRequest).listen(appConfig.PORT, async () => {
     logger.info(`Jumphost version ${appConfig.VERSION}`);
+    await gitService.initRepositories(false);
+    logger.info("Git init done");
     logger.info(`Server is listening on port ${appConfig.PORT}`);
   });
 };

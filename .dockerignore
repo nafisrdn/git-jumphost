@@ -4,3 +4,4 @@ repo
 .env
 .env.example
 .git
+*.log

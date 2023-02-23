@@ -1,93 +1,49 @@
-const exec = require("child_process").exec;
-const simpleGit = require("simple-git");
-const gitConfig = require("../config/git.config");
-const gitUtils = require("../utils/git.util");
-const { logger } = require("../utils/logger.util");
-const git = simpleGit(gitConfig.REPOSITORY_DIR_PATH);
+const {
+  SOURCE_REPO_URL,
+  SOURCE_GIT_USERNAME,
+  SOURCE_GIT_PASSWORD,
+  TARGET_REPO_URL,
+  TARGET_GIT_USERNAME,
+  TARGET_GIT_PASSWORD,
+} = require("../config/git.config");
+const GitRepository = require("../models/git-repository.model");
 
-const switchBranch = async (branch) => {
-  const localBranchExists = await isBranchExistInLocal(branch);
+let repositories = [];
 
-  if (localBranchExists) {
-    logger.info(`Branch "${branch}" exists in local`);
-    await git.checkout(branch);
-  } else {
-    logger.info(`Branch "${branch}" does not exist in local, creating it`);
-    await git.checkoutLocalBranch(branch);
-    logger.info(`Branch "${branch}" successfully created`);
+const initRepositories = async (initLocalRepo = false) => {
+  for (let i = 0; i < SOURCE_REPO_URL.split(",").length; i++) {
+    const sourceRepoUrl = SOURCE_REPO_URL.split(",")[i];
+    const sourceGitUsername = SOURCE_GIT_USERNAME.split(",")[i];
+    const sourceGitPassword = SOURCE_GIT_PASSWORD.split(",")[i];
+
+    const targetRepoUrl = TARGET_REPO_URL.split(",")[i];
+    const targetGitUsername = TARGET_GIT_USERNAME.split(",")[i];
+    const targetGitPassword = TARGET_GIT_PASSWORD.split(",")[i];
+
+    const repo = new GitRepository(
+      sourceRepoUrl,
+      sourceGitUsername,
+      sourceGitPassword,
+      targetRepoUrl,
+      targetGitUsername,
+      targetGitPassword
+    );
+
+    if (initLocalRepo) {
+      await repo.initLocalRepo();
+    }
+
+    await repo.initGit();
+
+    repositories[i] = repo;
   }
-
-  logger.info(`Using branch "${branch}" for the following git actions`);
 };
 
-const discardAndResetRepo = async (branch) => {
-  await switchBranch(branch);
-
-  await gitUtils.runGitCommand("git clean -f");
-  await gitUtils.runGitCommand("git reset --hard");
+const getRepositories = () => {
+  return repositories;
 };
 
-const isBranchExistInLocal = async (branch) => {
-  const localBranches = await git.branchLocal();
+const getRepoBySourceUrl = (url) =>
+  getRepositories().filter((repo) => repo.sourceRepoUrl === url)[0];
 
-  const isExist = localBranches.all.includes(branch);
-
-  return isExist;
-};
-
-const gitPushToTarget = async (branch) => {
-  const targetRemote = gitUtils.generateOriginUrlWithCreds(
-    gitConfig.TARGET_GIT_USERNAME,
-    gitConfig.TARGET_GIT_PASSWORD,
-    gitConfig.TARGET_REPO_URL
-  );
-
-  const pushResult = await git.push(targetRemote, branch, {
-    "--force": null,
-  });
-
-  logger.debug(JSON.stringify(pushResult));
-};
-
-const initRepo = () =>
-  new Promise((resolve, reject) => {
-    const buildProcess = exec(`npm run build`);
-
-    buildProcess.stdout.on("data", (data) => {
-      logger.debug(data);
-    });
-
-    buildProcess.stderr.on("data", (error) => {
-      reject(error);
-    });
-
-    buildProcess.on("exit", (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(`Build process exited with code: ${code}`);
-      }
-    });
-  });
-
-const gitFetchFromSource = async (branch) => {
-  const sourceRemote = gitUtils.generateOriginUrlWithCreds(
-    gitConfig.SOURCE_GIT_USERNAME,
-    gitConfig.SOURCE_GIT_PASSWORD,
-    gitConfig.SOURCE_REPO_URL
-  );
-
-  const fetchResult = await gitUtils.runGitCommand(
-    `git fetch ${sourceRemote} ${branch}`
-  );
-  logger.debug(fetchResult);
-
-  const resetHard = await gitUtils.runGitCommand(`git reset --hard FETCH_HEAD`);
-  logger.debug(resetHard);
-};
-
-module.exports.discardAndResetRepo = discardAndResetRepo;
-module.exports.switchBranch = switchBranch;
-module.exports.gitPushToTarget = gitPushToTarget;
-module.exports.initRepo = initRepo;
-module.exports.gitFetchFromSource = gitFetchFromSource;
+module.exports = { initRepositories, getRepositories, getRepoBySourceUrl };
